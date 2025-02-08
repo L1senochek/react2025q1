@@ -30,12 +30,14 @@ const CardModal: React.FC = (): ReactNode => {
             `https://rickandmortyapi.com/api/character/${characterId}`
           );
           if (!response.ok) {
-            throw new Error('Failed to fetch character details');
+            setCharacter(null);
+            return;
           }
           const data = await response.json();
           setCharacter(data);
         } catch (error) {
           console.error('Error fetching details:', error);
+          setCharacter(null);
         } finally {
           setIsLoading(false);
         }
