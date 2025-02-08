@@ -1,19 +1,10 @@
-import { Component } from 'react';
+import { FC, ReactElement } from 'react';
+import { RouterProvider } from 'react-router';
+import Router from '@/components/Router/Router';
 import './App.css';
 
-type AppProps = object;
-type AppState = object;
-
-class App extends Component<AppProps, AppState> {
-  render() {
-    if (Math.random() > 0.9) throw new Error('new error');
-
-    return (
-      <>
-        <div>App</div>
-      </>
-    );
-  }
-}
+const App: FC = (): ReactElement => {
+  return <RouterProvider router={Router} />;
+};
 
 export default App;

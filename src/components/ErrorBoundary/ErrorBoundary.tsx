@@ -1,17 +1,15 @@
-import { Component, ReactNode } from 'react';
-import Fallback from '@/components/Fallback/Fallback.tsx';
+import { Component } from 'react';
+import Fallback from '@/pages/Fallback/Fallback.tsx';
+import {
+  IErrorBoundaryProps,
+  IErrorBoundaryState,
+} from '@/model/ErrorBoundary.ts';
 
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
+class ErrorBoundary extends Component<
+  IErrorBoundaryProps,
+  IErrorBoundaryState
+> {
+  constructor(props: IErrorBoundaryProps) {
     super(props);
     this.state = {
       hasError: false,
