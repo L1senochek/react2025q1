@@ -1,4 +1,11 @@
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import styles from './card-modal.module.scss';
@@ -9,6 +16,7 @@ const CardModal: React.FC = (): ReactNode => {
   const [character, setCharacter] = useState<ICharacterDetails | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const modalRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,14 +43,36 @@ const CardModal: React.FC = (): ReactNode => {
     }
   }, [characterId, location.pathname]);
 
-  const handleClose = (): void => {
+  const handleClose = useCallback(() => {
     const savedSearchTerm = localStorage.getItem('searchTerm') || '';
     const savedPage = localStorage.getItem('currentPage') || '1';
     navigate(
       `/main?page=${savedPage}${savedSearchTerm ? `&query=${savedSearchTerm}` : ''}`
     );
     setIsOpen(false);
-  };
+  }, [navigate]);
+
+  const handleOutsideClick = useCallback(
+    (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        handleClose();
+      }
+    },
+    [handleClose]
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [handleOutsideClick, isOpen]);
 
   const characterDetails = useMemo(() => {
     if (!character) return null;
@@ -65,26 +95,35 @@ const CardModal: React.FC = (): ReactNode => {
   }
 
   return (
-    <div className={`${styles['card-details']} ${isOpen ? '' : styles.hidden}`}>
-      <button className={styles['close-btn']} onClick={handleClose}>
-        Close
-      </button>
-      {isLoading ? (
-        <div>Loading details...</div>
-      ) : character ? (
-        <>
-          <h2 className={styles['card-details__header']}>{character.name}</h2>
-          <img
-            className={styles.avatar}
-            src={character.image}
-            alt={character.name}
-          />
-          {characterDetails}
-        </>
-      ) : (
-        <div>Character details not found</div>
-      )}
-    </div>
+    <>
+      <div
+        className={`${styles['modal-overlay']} ${isOpen ? styles.visible : styles.hidden}`}
+        onClick={handleClose}
+      ></div>
+      <div
+        className={`${styles['card-details']} ${isOpen ? '' : styles.hidden}`}
+        ref={modalRef}
+      >
+        <button className={styles['close-btn']} onClick={handleClose}>
+          Close
+        </button>
+        {isLoading ? (
+          <div>Loading details...</div>
+        ) : character ? (
+          <>
+            <h2 className={styles['card-details__header']}>{character.name}</h2>
+            <img
+              className={styles.avatar}
+              src={character.image}
+              alt={character.name}
+            />
+            {characterDetails}
+          </>
+        ) : (
+          <div>Character details not found</div>
+        )}
+      </div>
+    </>
   );
 };
 
