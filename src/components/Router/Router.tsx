@@ -10,8 +10,10 @@ import MainPage from '@/pages/MainPage/MainPage.tsx';
 import CardModal from '@/components/CardModal/CardModal.tsx';
 import NotFound from '@/pages/NotFound/NotFound.tsx';
 
-const savedQuery = localStorage.getItem('searchTerm') || '';
-const savedCurrentPage = localStorage.getItem('currentPage') || 1;
+const savedQuery =
+  typeof window !== 'undefined' ? localStorage.getItem('searchTerm') || '' : '';
+const savedCurrentPage =
+  typeof window !== 'undefined' ? localStorage.getItem('currentPage') || 1 : 1;
 
 const Router = createBrowserRouter(
   createRoutesFromElements(
