@@ -1,17 +1,8 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import styles from './card-modal.module.scss';
-
-interface ICharacterDetails {
-  id: number;
-  name: string;
-  image: string;
-  status: string;
-  species: string;
-  gender: string;
-  origin: { name: string };
-}
+import ICharacterDetails from '@/model/CardModal.ts';
 
 const CardModal: React.FC = (): ReactNode => {
   const { characterId } = useParams<{ characterId: string }>();
@@ -25,14 +16,14 @@ const CardModal: React.FC = (): ReactNode => {
     if (location.pathname.includes(`/main/character/${characterId}`)) {
       setIsOpen(true);
       setIsLoading(true);
-
       (async () => {
         try {
           const response = await fetch(
             `https://rickandmortyapi.com/api/character/${characterId}`
           );
-          if (!response.ok)
+          if (!response.ok) {
             throw new Error('Failed to fetch character details');
+          }
           const data = await response.json();
           setCharacter(data);
         } catch (error) {
@@ -50,9 +41,24 @@ const CardModal: React.FC = (): ReactNode => {
     navigate(
       `/main?page=${savedPage}${savedSearchTerm ? `&query=${savedSearchTerm}` : ''}`
     );
-
     setIsOpen(false);
   };
+
+  const characterDetails = useMemo(() => {
+    if (!character) return null;
+
+    return [
+      { label: 'Status', value: character.status },
+      { label: 'Species', value: character.species },
+      { label: 'Gender', value: character.gender },
+      { label: 'Origin', value: character.origin.name },
+    ].map(({ label, value }) => (
+      <p key={label}>
+        <span className={styles['card-details__highlight']}>{label}:</span>
+        <span>{value}</span>
+      </p>
+    ));
+  }, [character]);
 
   if (!isOpen) {
     return null;
@@ -73,22 +79,7 @@ const CardModal: React.FC = (): ReactNode => {
             src={character.image}
             alt={character.name}
           />
-          <p>
-            <span className={styles['card-details__highlight']}>Status:</span>
-            <span>{character.status}</span>
-          </p>
-          <p>
-            <span className={styles['card-details__highlight']}>Species:</span>
-            <span>{character.species}</span>
-          </p>
-          <p>
-            <span className={styles['card-details__highlight']}>Gender:</span>
-            <span>{character.gender}</span>
-          </p>
-          <p>
-            <span className={styles['card-details__highlight']}>Origin:</span>
-            <span>{character.origin.name}</span>
-          </p>
+          {characterDetails}
         </>
       ) : (
         <div>Character details not found</div>
