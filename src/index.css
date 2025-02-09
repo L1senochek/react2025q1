@@ -3,7 +3,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: dark light;
   color: rgba(255, 255, 255, 0.87);
   background-color: #002020;
 
@@ -63,10 +63,12 @@ button:focus-visible {
   }
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    color: rgba(255, 255, 255, 0.87);
+    /*background-color: #ffffff;*/
+    background-color: #002020;
   }
   a:hover {
     color: #747bff;
