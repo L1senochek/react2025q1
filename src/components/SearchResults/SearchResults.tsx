@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 import ISearchResultsProps from '@/model/SearchResults';
 import styles from './search-results.module.scss';
 
@@ -37,4 +37,4 @@ const SearchResults: React.FC<ISearchResultsProps> = ({
   );
 };
 
-export default SearchResults;
+export default memo(SearchResults);

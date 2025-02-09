@@ -1,4 +1,11 @@
-import React, { ChangeEvent, KeyboardEvent, ReactElement } from 'react';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  memo,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import styles from './searchbar.module.scss';
 import ISearchBarProps from '@/model/SearchBar';
 
@@ -7,41 +14,50 @@ const SearchBar: React.FC<ISearchBarProps> = ({
   onInputChange,
   onSearchSubmit,
 }): ReactElement => {
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    onInputChange(event.target.value);
-  };
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>): void => {
-    if (event.key === 'Enter') {
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
       event.preventDefault();
-      onSearchSubmitEnter(event);
-    }
-  };
+      onInputChange(event.target.value);
+    },
+    [onInputChange]
+  );
 
-  const onSearchSubmitEnter = (
-    event: KeyboardEvent<HTMLInputElement>
-  ): void => {
-    if (event.key === 'Enter') {
+  const handleSubmit = useCallback(
+    (event: KeyboardEvent<HTMLInputElement> | React.FormEvent): void => {
       event.preventDefault();
       onSearchSubmit();
-    }
-  };
+    },
+    [onSearchSubmit]
+  );
+
+  const handleInputFocus = (): void => setIsFocused(!isFocused);
+  const handleButtonHover = (): void => setIsHovered(!isHovered);
 
   return (
-    <div className={styles.searchbar}>
+    <form
+      role="search"
+      className={`${styles.searchbar} ${isFocused ? styles.focused : ''} ${isHovered ? styles.hovered : ''}`}
+      onSubmit={handleSubmit}
+      onFocus={handleInputFocus}
+      onBlur={handleInputFocus}
+      onMouseEnter={handleButtonHover}
+      onMouseLeave={handleButtonHover}
+    >
       <input
         className={styles.searchbar__input}
         type="text"
         value={searchTerm}
         onChange={handleChange}
         placeholder="Search characters..."
-        onKeyUp={handleKeyUp}
       />
-      <button className={styles.searchbar__btn} onClick={onSearchSubmit}>
+      <button className={styles.searchbar__btn} type={'submit'}>
         Search
       </button>
-    </div>
+    </form>
   );
 };
 
-export default SearchBar;
+export default memo(SearchBar);

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './pagination.module.scss';
 
@@ -15,21 +15,24 @@ const Pagination: React.FC<IPaginationProps> = ({
 }): ReactElement => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const handlePageChange = (page: number) => {
-    if (page > 0 && page <= totalPages) {
-      searchParams.set('page', page.toString());
-      setSearchParams(searchParams);
-      onPageChange(page);
-    }
-  };
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (page > 0 && page <= totalPages) {
+        searchParams.set('page', page.toString());
+        setSearchParams(searchParams);
+        onPageChange(page);
+      }
+    },
+    [searchParams, setSearchParams, onPageChange, totalPages]
+  );
 
-  const goToFirstPage = () => {
+  const goToFirstPage = useCallback(() => {
     searchParams.set('page', '1');
     setSearchParams(searchParams);
     onPageChange(1);
-  };
+  }, [onPageChange, searchParams, setSearchParams]);
 
-  const renderPageNumbers = () => {
+  const renderPageNumbers = useMemo(() => {
     const pages = [];
 
     pages.push(
@@ -77,7 +80,7 @@ const Pagination: React.FC<IPaginationProps> = ({
     }
 
     return pages;
-  };
+  }, [currentPage, goToFirstPage, totalPages, handlePageChange]);
 
   return (
     <div className={styles.pagination}>
@@ -87,7 +90,7 @@ const Pagination: React.FC<IPaginationProps> = ({
       >
         &lt;
       </button>
-      {renderPageNumbers()}
+      {renderPageNumbers}
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
@@ -98,4 +101,4 @@ const Pagination: React.FC<IPaginationProps> = ({
   );
 };
 
-export default Pagination;
+export default memo(Pagination);

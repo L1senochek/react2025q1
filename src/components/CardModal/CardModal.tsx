@@ -1,4 +1,5 @@
 import React, {
+  memo,
   ReactNode,
   useCallback,
   useEffect,
@@ -129,4 +130,4 @@ const CardModal: React.FC = (): ReactNode => {
   );
 };
 
-export default CardModal;
+export default memo(CardModal);
