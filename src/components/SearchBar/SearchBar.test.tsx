@@ -51,7 +51,7 @@ describe('SearchBar:', () => {
     );
 
     const input = screen.getByPlaceholderText(/search characters/i);
-    fireEvent.keyUp(input, { key: 'Enter' });
+    fireEvent.submit(input);
 
     await waitFor(() => {
       expect(mockOnSearchSubmit).toHaveBeenCalled();
