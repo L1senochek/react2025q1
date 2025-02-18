@@ -15,19 +15,13 @@ const savedQuery =
   typeof window !== 'undefined' ? localStorage.getItem('searchTerm') || '' : '';
 const savedCurrentPage =
   typeof window !== 'undefined' ? localStorage.getItem('currentPage') || 1 : 1;
+const redirectToInitialPath = `/main?page=${savedCurrentPage}${savedQuery ? `&query=${savedQuery}` : ''}`;
 
 const Router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Layout />} errorElement={<ErrorMessage />}>
-        <Route
-          path=""
-          element={
-            <Navigate
-              to={`/main?page=${savedCurrentPage}${savedQuery ? `&query=${savedQuery}` : ''}`}
-            />
-          }
-        />
+        <Route path="" element={<Navigate to={redirectToInitialPath} />} />
         <Route path="/main" element={<MainPage />}>
           <Route path="character/:characterId" element={<CardModal />} />
         </Route>

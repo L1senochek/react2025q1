@@ -103,7 +103,7 @@ const CardModal: React.FC = (): ReactNode => {
         value: character.origin.name,
       },
     ].map(({ label, value }) => (
-      <p key={label}>
+      <p key={label} className={styles['character-card__details']}>
         <span className={styles['card-details__highlight']}>{label}:</span>
         <span>{value}</span>
       </p>
@@ -120,29 +120,38 @@ const CardModal: React.FC = (): ReactNode => {
         className={`${styles['modal-overlay']} ${isOpen ? styles.visible : styles.hidden}`}
         onClick={handleClose}
       ></div>
-      <div
+      <article
         className={`${styles['card-details']} ${isOpen ? '' : styles.hidden}`}
         ref={modalRef}
       >
-        <button className={styles['close-btn']} onClick={handleClose}>
-          Close
-        </button>
+        <header className={styles['card-details__header']}>
+          <button className={styles['close-btn']} onClick={handleClose}>
+            Close
+          </button>
+        </header>
+
         {isLoading ? (
-          <div>Loading details...</div>
+          <section>
+            <p>Loading details...</p>
+          </section>
         ) : character ? (
-          <>
+          <section className={styles['character-card']}>
             <h2 className={styles['card-details__header']}>{character.name}</h2>
-            <img
-              className={styles.avatar}
-              src={character.image}
-              alt={character.name}
-            />
+            <figure className={styles['character-image']}>
+              <img
+                className={styles.avatar}
+                src={character.image}
+                alt={character.name}
+              />
+            </figure>
             {characterDetails}
-          </>
+          </section>
         ) : (
-          <div>Character details not found</div>
+          <section>
+            <p>Character details not found</p>
+          </section>
         )}
-      </div>
+      </article>
     </>
   );
 };
