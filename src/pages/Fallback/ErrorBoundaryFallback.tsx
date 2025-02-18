@@ -1,8 +1,13 @@
-import styles from './fallback.module.scss';
-import IFallbackProps from '@/model/ErrorBoundaryFallback.ts';
 import { FC, ReactElement } from 'react';
 
-const Fallback: FC<IFallbackProps> = ({ error, onReset }): ReactElement => {
+import styles from './error-boundary-fallback.module.scss';
+
+import IFallbackProps from '@/model/ErrorBoundaryFallback.ts';
+
+const ErrorBoundaryFallback: FC<IFallbackProps> = ({
+  error,
+  onReset,
+}): ReactElement => {
   return (
     <div className={styles['error-boundary']}>
       <h2 className={styles['error-boundary__title']}>Something went wrong!</h2>
@@ -12,4 +17,4 @@ const Fallback: FC<IFallbackProps> = ({ error, onReset }): ReactElement => {
   );
 };
 
-export default Fallback;
+export default ErrorBoundaryFallback;

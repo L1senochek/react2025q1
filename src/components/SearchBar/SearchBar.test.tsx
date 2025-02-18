@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+
 import SearchBar from '@/components/SearchBar/SearchBar';
 
 describe('SearchBar:', () => {
@@ -20,6 +21,7 @@ describe('SearchBar:', () => {
     );
 
     const input = screen.getByPlaceholderText(/search characters/i);
+
     fireEvent.change(input, { target: { value: 'Morty' } });
 
     expect(mockOnInputChange).toHaveBeenCalledWith('Morty');
@@ -51,6 +53,7 @@ describe('SearchBar:', () => {
     );
 
     const input = screen.getByPlaceholderText(/search characters/i);
+
     fireEvent.submit(input);
 
     await waitFor(() => {

@@ -1,9 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import SearchResults from './SearchResults';
-import { describe, expect, test } from 'vitest';
-import { ICharacter } from '@/model/App.ts';
-import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, test } from 'vitest';
+
+import SearchResults from './SearchResults';
+
+import { ICharacter } from '@/model/App.ts';
 
 describe('SearchResults: ', (): void => {
   const mockSearchResults: ICharacter[] = [
@@ -13,8 +15,14 @@ describe('SearchResults: ', (): void => {
       status: 'Alive',
       species: 'Human',
       gender: 'Male',
-      origin: { name: 'Earth', url: '' },
-      location: { name: 'Citadel of Ricks', url: '' },
+      origin: {
+        name: 'Earth',
+        url: '',
+      },
+      location: {
+        name: 'Citadel of Ricks',
+        url: '',
+      },
       image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
       episode: [],
       url: '',
@@ -26,8 +34,14 @@ describe('SearchResults: ', (): void => {
       status: 'Alive',
       species: 'Human',
       gender: 'Male',
-      origin: { name: 'Earth', url: '' },
-      location: { name: 'Earth', url: '' },
+      origin: {
+        name: 'Earth',
+        url: '',
+      },
+      location: {
+        name: 'Earth',
+        url: '',
+      },
       image: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
       episode: [],
       url: '',
@@ -46,6 +60,7 @@ describe('SearchResults: ', (): void => {
     );
 
     const cards = screen.getAllByRole('heading', { level: 3 });
+
     expect(cards.length).toBe(mockSearchResults.length);
   });
 
@@ -63,6 +78,7 @@ describe('SearchResults: ', (): void => {
     render(<SearchResults searchResults={[]} onItemClick={() => {}} />);
 
     const noResultsMessage = screen.getByText(/no results found/i);
+
     expect(noResultsMessage).toBeTruthy();
   });
 
@@ -77,6 +93,7 @@ describe('SearchResults: ', (): void => {
     );
 
     const images = screen.getAllByRole('img');
+
     expect(images.length).toBe(mockSearchResults.length);
 
     expect(images[0]).toHaveAttribute('src', mockSearchResults[0].image);
@@ -88,6 +105,7 @@ describe('SearchResults: ', (): void => {
 
   test('- Clicking on a card triggers navigation to detailed view', async () => {
     const mockNavigate = vi.fn();
+
     vi.mock('react-router-dom', async () => ({
       ...(await vi.importActual('react-router-dom')),
       useNavigate: () => mockNavigate,
@@ -103,6 +121,7 @@ describe('SearchResults: ', (): void => {
     );
 
     const rickCard = screen.getByText('Rick Sanchez');
+
     fireEvent.click(rickCard);
 
     await waitFor(() => {
@@ -138,6 +157,7 @@ describe('SearchResults: ', (): void => {
     );
 
     const rickCard = screen.getByText('Rick Sanchez');
+
     fireEvent.click(rickCard);
 
     await waitFor(() => {

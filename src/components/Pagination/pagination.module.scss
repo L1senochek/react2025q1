@@ -1,27 +1,29 @@
 .pagination {
   display: flex;
+  gap: 5px;
   align-items: center;
   justify-content: center;
-  gap: 5px;
 }
 
 .pagination > button.active {
-  border-color: #00ffff;
-  box-shadow: 0 0 15px 1px #00ffff;
+  border-color: hsl(180deg 100% 50%);
+  box-shadow: 0 0 15px 1px hsl(180deg 100% 50%);
 }
 
 .pagination > button:disabled {
+  cursor: no-drop;
   border-color: transparent;
   box-shadow: none;
-  cursor: no-drop;
 }
 
 .pagination > span {
-  display: flex;
-  width: 40px;
-  align-items: flex-end;
-  justify-content: center;
-  height: 40px;
   cursor: auto;
   user-select: none;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
 }

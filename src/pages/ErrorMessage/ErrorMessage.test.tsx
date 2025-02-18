@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import ErrorMessage from './ErrorMessage';
 import { describe, expect, test, vi } from 'vitest';
+
+import ErrorMessage from './ErrorMessage';
 
 describe('ErrorMessage:', () => {
   vi.mock('react-router', async (importOriginal) => {
     const actual = (await importOriginal()) as typeof import('react-router');
+
     return {
       ...actual,
       useRouteError: () => new Error('Test error message'),
@@ -25,9 +27,11 @@ describe('ErrorMessage:', () => {
     );
 
     const errorTitle = screen.getByText(/Error message:/i);
+
     expect(errorTitle).toBeTruthy();
 
     const errorMessageText = screen.getByText(errorMessage);
+
     expect(errorMessageText).toBeTruthy();
   });
 });

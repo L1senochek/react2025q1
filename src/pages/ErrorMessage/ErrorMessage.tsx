@@ -1,7 +1,8 @@
-import { useRouteError } from 'react-router';
-import styles from './error-message.module.scss';
-import { Link } from 'react-router-dom';
 import { FC, ReactElement } from 'react';
+import { useRouteError } from 'react-router';
+import { Link } from 'react-router-dom';
+
+import styles from './error-message.module.scss';
 
 const ErrorMessage: FC = (): ReactElement => {
   const error = useRouteError() as Error;
@@ -10,7 +11,7 @@ const ErrorMessage: FC = (): ReactElement => {
     <div className={styles.error}>
       <h2 className={styles.error__title}>Error message:</h2>
       <h3 className={styles.error__message}>{error.message}</h3>
-      <Link className={styles.error__btn} to={'/'}>
+      <Link className={styles.error__btn} to="/">
         Home
       </Link>
     </div>

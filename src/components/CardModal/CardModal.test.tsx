@@ -1,18 +1,18 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
-import CardModal from './CardModal';
 import { MemoryRouter, Params, Route, Routes } from 'react-router-dom';
+import { describe, expect, test, vi } from 'vitest';
+
+import CardModal from './CardModal';
 
 const mockedNavigate = vi.fn();
 
 vi.mock('react-router', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import('react-router');
+
   return {
     ...actual,
     useNavigate: () => mockedNavigate,
-    useParams: (): Readonly<Params<string>> => ({
-      characterId: '1',
-    }),
+    useParams: (): Readonly<Params<string>> => ({ characterId: '1' }),
   };
 });
 
@@ -55,6 +55,7 @@ describe('CardModal: ', (): void => {
     );
 
     const closeButton = screen.getByText('Close');
+
     fireEvent.click(closeButton);
 
     expect(screen.queryByText('Rick Sanchez')).not.toBeTruthy();
@@ -96,6 +97,7 @@ describe('CardModal: ', (): void => {
     expect(screen.getByText('Rick Sanchez')).toBeTruthy();
 
     const statusElement = screen.getByText(/Status/i);
+
     expect(statusElement).toBeTruthy();
 
     expect(screen.getByText(/Species:/i)).toBeTruthy();

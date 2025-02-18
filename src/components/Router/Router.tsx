@@ -1,14 +1,15 @@
 import {
-  createBrowserRouter,
-  createRoutesFromElements,
   Navigate,
   Route,
+  createBrowserRouter,
+  createRoutesFromElements,
 } from 'react-router-dom';
-import Layout from '@/layouts/Layout.tsx';
-import ErrorMessage from '@/pages/ErrorMessage/ErrorMessage.tsx';
-import MainPage from '@/pages/MainPage/MainPage.tsx';
-import CardModal from '@/components/CardModal/CardModal.tsx';
-import NotFound from '@/pages/NotFound/NotFound.tsx';
+
+import { CardModal } from '@/components/CardModal';
+import { Layout } from '@/layouts';
+import { ErrorMessage } from '@/pages/ErrorMessage';
+import { MainPage } from '@/pages/MainPage';
+import { NotFound } from '@/pages/NotFound';
 
 const savedQuery =
   typeof window !== 'undefined' ? localStorage.getItem('searchTerm') || '' : '';
@@ -18,7 +19,7 @@ const savedCurrentPage =
 const Router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path={'/'} element={<Layout />} errorElement={<ErrorMessage />}>
+      <Route path="/" element={<Layout />} errorElement={<ErrorMessage />}>
         <Route
           path=""
           element={

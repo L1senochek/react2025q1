@@ -1,12 +1,14 @@
 import React, {
   ChangeEvent,
   KeyboardEvent,
-  memo,
   ReactElement,
+  memo,
   useCallback,
   useState,
 } from 'react';
+
 import styles from './searchbar.module.scss';
+
 import ISearchBarProps from '@/model/SearchBar';
 
 const SearchBar: React.FC<ISearchBarProps> = ({
@@ -39,7 +41,7 @@ const SearchBar: React.FC<ISearchBarProps> = ({
   return (
     <form
       role="search"
-      className={`${styles.searchbar} ${isFocused ? styles.focused : ''} ${isHovered ? styles.hovered : ''}`}
+      className={`${styles['search-bar']} ${isFocused ? styles.focused : ''} ${isHovered ? styles.hovered : ''}`}
       onSubmit={handleSubmit}
       onFocus={handleInputFocus}
       onBlur={handleInputFocus}
@@ -47,13 +49,13 @@ const SearchBar: React.FC<ISearchBarProps> = ({
       onMouseLeave={handleButtonHover}
     >
       <input
-        className={styles.searchbar__input}
+        className={styles['search-bar__input']}
         type="text"
         value={searchTerm}
         onChange={handleChange}
         placeholder="Search characters..."
       />
-      <button className={styles.searchbar__btn} type={'submit'}>
+      <button className={styles['search-bar__input']} type="submit">
         Search
       </button>
     </form>

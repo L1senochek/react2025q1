@@ -6,22 +6,25 @@
 }
 
 .logo {
+  will-change: filter;
   height: 6em;
   padding: 1.5em;
-  will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em hsl(237deg 100% 70% / 66.7%));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em hsl(193deg 95% 68% / 66.7%));
 }
 
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -38,5 +41,5 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: hsl(0deg 0% 53%);
 }

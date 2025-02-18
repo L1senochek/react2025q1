@@ -1,11 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, expect, it, Mock, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, useSearchParams } from 'react-router-dom';
+import { Mock, describe, expect, it, vi } from 'vitest';
+
 import Pagination from './Pagination';
+
 import styles from './pagination.module.scss';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
+
   return {
     ...actual,
     useSearchParams: vi.fn(),
@@ -36,6 +39,7 @@ describe('Pagination:', () => {
     );
 
     const firstPageButton = screen.getByText('1');
+
     fireEvent.click(firstPageButton);
 
     expect(mockSetSearchParams).toHaveBeenCalledWith(
@@ -44,6 +48,7 @@ describe('Pagination:', () => {
     expect(mockSetSearchParams.mock.calls[0][0].get('page')).toBe('1');
 
     const nextPageButton = screen.getByText('>');
+
     fireEvent.click(nextPageButton);
 
     expect(mockSetSearchParams).toHaveBeenCalledWith(
@@ -64,6 +69,7 @@ describe('Pagination:', () => {
     );
 
     const prevButton = screen.getByText('<');
+
     expect(prevButton).toBeDisabled();
   });
 
@@ -79,6 +85,7 @@ describe('Pagination:', () => {
     );
 
     const nextButton = screen.getByText('>');
+
     expect(nextButton).toBeDisabled();
   });
 
@@ -101,6 +108,7 @@ describe('Pagination:', () => {
     expect(screen.getByText('5')).toBeInTheDocument();
 
     const activePage = screen.getByText('3');
+
     expect(activePage).toHaveClass(styles.active);
   });
 
@@ -116,11 +124,13 @@ describe('Pagination:', () => {
     );
 
     const secondPageButton = screen.getByText('2');
+
     fireEvent.click(secondPageButton);
 
     expect(mockOnPageChange).toHaveBeenCalledWith(2);
 
     const lastPageButton = screen.getByText('5');
+
     fireEvent.click(lastPageButton);
 
     expect(mockOnPageChange).toHaveBeenCalledWith(5);
@@ -143,6 +153,7 @@ describe('Pagination:', () => {
 
     const prevButton = screen.getByText('<');
     const nextButton = screen.getByText('>');
+
     expect(prevButton).toBeDisabled();
     expect(nextButton).toBeDisabled();
   });

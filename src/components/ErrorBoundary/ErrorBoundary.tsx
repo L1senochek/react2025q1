@@ -1,9 +1,10 @@
 import { Component } from 'react';
-import Fallback from '@/pages/Fallback/Fallback.tsx';
+
 import {
   IErrorBoundaryProps,
   IErrorBoundaryState,
-} from '@/model/ErrorBoundary.ts';
+} from '@/model/ErrorBoundary';
+import { ErrorBoundaryFallback } from '@/pages/Fallback';
 
 class ErrorBoundary extends Component<
   IErrorBoundaryProps,
@@ -18,16 +19,27 @@ class ErrorBoundary extends Component<
   }
 
   public static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
+    return {
+      hasError: true,
+      error,
+    };
   }
 
   private resetError = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({
+      hasError: false,
+      error: null,
+    });
   };
 
   public render() {
     if (this.state.hasError) {
-      return <Fallback error={this.state.error} onReset={this.resetError} />;
+      return (
+        <ErrorBoundaryFallback
+          error={this.state.error}
+          onReset={this.resetError}
+        />
+      );
     }
 
     return this.props.children;

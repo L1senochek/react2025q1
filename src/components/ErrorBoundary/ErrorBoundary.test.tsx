@@ -1,10 +1,12 @@
-import { MemoryRouter } from 'react-router-dom';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import ErrorBoundary from './ErrorBoundary';
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
+
   return {
     ...actual,
     MemoryRouter: actual.MemoryRouter,
@@ -34,6 +36,7 @@ describe('ErrorBoundary:', () => {
     });
 
     const reloadButton = screen.getByText('Back');
+
     expect(reloadButton).toBeInTheDocument();
   });
 
@@ -55,6 +58,7 @@ describe('ErrorBoundary:', () => {
     });
 
     const fallbackErrorText = screen.getByText('Custom error message');
+
     expect(fallbackErrorText).toBeInTheDocument();
   });
 });

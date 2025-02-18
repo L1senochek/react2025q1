@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import NotFound from './NotFound';
 import { describe, expect, test } from 'vitest';
+
+import NotFound from './NotFound';
 
 describe('NotFound:', () => {
   test('- Renders "Page not found" message correctly', () => {
@@ -15,9 +16,11 @@ describe('NotFound:', () => {
     );
 
     const notFoundTitle = screen.getByText(/Page not found!/i);
+
     expect(notFoundTitle).toBeTruthy();
 
     const notFoundMessage = screen.getByText(/404/i);
+
     expect(notFoundMessage).toBeTruthy();
   });
 
@@ -32,6 +35,7 @@ describe('NotFound:', () => {
     );
 
     const homeLink = screen.getByText(/Home/i);
+
     expect(homeLink).toBeTruthy();
     expect(homeLink.getAttribute('href')).toBe('/');
   });

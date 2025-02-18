@@ -1,13 +1,28 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
+import { defineConfig } from 'vite';
+import viteStylelint from 'vite-plugin-stylelint';
 import { configDefaults } from 'vitest/config';
 
+const viteStylelintOptions = {
+  include: ['src/**/*.{css,scss,less,vue,svelte}'],
+  exclude: ['node_modules', 'dist'],
+  fix: true,
+  cache: false,
+  lintInWorker: true,
+  dev: true,
+};
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), viteStylelint(viteStylelintOptions)],
+  // resolve: { alias: { '@': '/src' } },
   resolve: {
-    alias: {
-      '@': '/src',
-    },
+    alias: [
+      {
+        find: '@',
+        replacement: resolve(__dirname, './src/'),
+      },
+    ],
   },
   test: {
     coverage: {

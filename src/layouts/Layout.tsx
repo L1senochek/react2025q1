@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router';
 import { FC, ReactElement } from 'react';
+import { Outlet } from 'react-router';
 
 const Layout: FC = (): ReactElement => {
   return (

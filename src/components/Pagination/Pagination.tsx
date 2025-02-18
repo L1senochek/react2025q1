@@ -1,12 +1,9 @@
-import React, { memo, ReactElement, useCallback, useMemo } from 'react';
+import React, { ReactElement, memo, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+
 import styles from './pagination.module.scss';
 
-interface IPaginationProps {
-  totalPages: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-}
+import IPaginationProps from '@/model/Pagination.ts';
 
 const Pagination: React.FC<IPaginationProps> = ({
   totalPages,
@@ -51,6 +48,7 @@ const Pagination: React.FC<IPaginationProps> = ({
 
     const startPage = Math.max(2, currentPage - 1);
     const endPage = Math.min(totalPages - 1, currentPage + 1);
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button

@@ -7,13 +7,15 @@ import {
   useState,
 } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import styles from './main-page.module.scss';
+
+import { CardModal } from '@/components/CardModal';
+import { Pagination } from '@/components/Pagination';
+import { SearchBar } from '@/components/SearchBar';
+import { SearchResults } from '@/components/SearchResults';
 import useSearchQuery from '@/hooks/useSearchQuery';
 import { IAppProps } from '@/model/App';
-import SearchBar from '@/components/SearchBar/SearchBar';
-import SearchResults from '@/components/SearchResults/SearchResults';
-import Pagination from '@/components/Pagination/Pagination';
-import CardModal from '@/components/CardModal/CardModal';
-import styles from './main-page.module.scss';
 
 const MainPage: FC<IAppProps> = (): ReactElement => {
   const [characters, setCharacters] = useState([]);
@@ -49,6 +51,7 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
         }
 
         const data = await response.json();
+
         setCharacters(data.results);
         setTotalPages(data.info.pages || 1);
       } catch (error) {
@@ -63,6 +66,7 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
 
   useEffect((): void => {
     const savedSearchTerm = localStorage.getItem('searchTerm');
+
     if (savedSearchTerm) {
       setSearchTerm(savedSearchTerm);
       void fetchCharacters(savedSearchTerm, currentPage);

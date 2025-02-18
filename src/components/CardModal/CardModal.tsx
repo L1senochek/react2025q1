@@ -1,6 +1,6 @@
 import React, {
-  memo,
   ReactNode,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -9,7 +9,9 @@ import React, {
 } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
+
 import styles from './card-modal.module.scss';
+
 import ICharacterDetails from '@/model/CardModal.ts';
 
 const CardModal: React.FC = (): ReactNode => {
@@ -30,11 +32,13 @@ const CardModal: React.FC = (): ReactNode => {
           const response = await fetch(
             `https://rickandmortyapi.com/api/character/${characterId}`
           );
+
           if (!response.ok) {
             setCharacter(null);
             return;
           }
           const data = await response.json();
+
           setCharacter(data);
         } catch (error) {
           console.error('Error fetching details:', error);
@@ -49,6 +53,7 @@ const CardModal: React.FC = (): ReactNode => {
   const handleClose = useCallback(() => {
     const savedSearchTerm = localStorage.getItem('searchTerm') || '';
     const savedPage = localStorage.getItem('currentPage') || '1';
+
     navigate(
       `/main?page=${savedPage}${savedSearchTerm ? `&query=${savedSearchTerm}` : ''}`
     );
@@ -81,10 +86,22 @@ const CardModal: React.FC = (): ReactNode => {
     if (!character) return null;
 
     return [
-      { label: 'Status', value: character.status },
-      { label: 'Species', value: character.species },
-      { label: 'Gender', value: character.gender },
-      { label: 'Origin', value: character.origin.name },
+      {
+        label: 'Status',
+        value: character.status,
+      },
+      {
+        label: 'Species',
+        value: character.species,
+      },
+      {
+        label: 'Gender',
+        value: character.gender,
+      },
+      {
+        label: 'Origin',
+        value: character.origin.name,
+      },
     ].map(({ label, value }) => (
       <p key={label}>
         <span className={styles['card-details__highlight']}>{label}:</span>
