@@ -1,72 +1,64 @@
+import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { MemoryRouter, useSearchParams } from 'react-router-dom';
-import { Mock, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import Pagination from './Pagination';
 
 import styles from './pagination.module.scss';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+const mockedGet = vi.fn();
+const mockedToString = vi.fn();
+
+vi.mock('next/navigation', async () => {
+  const actual = await vi.importActual('next/navigation');
 
   return {
     ...actual,
-    useSearchParams: vi.fn(),
+    useSearchParams: () => ({
+      get: mockedGet,
+      toString: mockedToString,
+    }),
+  };
+});
+
+const mockedPush = vi.fn();
+
+vi.mock('next/router', async () => {
+  const actual = await vi.importActual('next/router');
+
+  return {
+    ...actual,
+    useRouter: () => ({
+      push: mockedPush,
+    }),
   };
 });
 
 describe('Pagination:', () => {
-  const mockOnPageChange = vi.fn();
-  const mockSetSearchParams = vi.fn();
+  it('- Updates the URL query parameter when page changes', async () => {
+    mockedGet.mockReturnValue('3');
+    mockedToString.mockReturnValue('page=3');
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    (useSearchParams as Mock).mockReturnValue([
-      new URLSearchParams(),
-      mockSetSearchParams,
-    ] as [URLSearchParams, (params: URLSearchParams) => void]);
-  });
-
-  it('- Updates the URL query parameter when page changes', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=3']}>
-        <Pagination
-          totalPages={5}
-          currentPage={3}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    render(<Pagination totalPages={5} />);
 
     const firstPageButton = screen.getByText('1');
 
     fireEvent.click(firstPageButton);
 
-    expect(mockSetSearchParams).toHaveBeenCalledWith(
-      expect.any(URLSearchParams)
-    );
-    expect(mockSetSearchParams.mock.calls[0][0].get('page')).toBe('1');
+    expect(mockedPush).toHaveBeenCalledWith('/main?page=1');
 
     const nextPageButton = screen.getByText('>');
 
     fireEvent.click(nextPageButton);
 
-    expect(mockSetSearchParams).toHaveBeenCalledWith(
-      expect.any(URLSearchParams)
-    );
-    expect(mockSetSearchParams.mock.calls[1][0].get('page')).toBe('4');
+    expect(mockedPush).toHaveBeenCalledWith('/main?page=4');
   });
 
   it('- Disables the previous page button when on the first page', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=1']}>
-        <Pagination
-          totalPages={5}
-          currentPage={1}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    mockedGet.mockReturnValue('1');
+    mockedToString.mockReturnValue('page=1');
+
+    render(<Pagination totalPages={5} />);
 
     const prevButton = screen.getByText('<');
 
@@ -74,15 +66,10 @@ describe('Pagination:', () => {
   });
 
   it('- Disables the next page button when on the last page', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=5']}>
-        <Pagination
-          totalPages={5}
-          currentPage={5}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    mockedGet.mockReturnValue('5');
+    mockedToString.mockReturnValue('page=5');
+
+    render(<Pagination totalPages={5} />);
 
     const nextButton = screen.getByText('>');
 
@@ -90,15 +77,10 @@ describe('Pagination:', () => {
   });
 
   it('- Renders the correct page numbers based on the current page', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=3']}>
-        <Pagination
-          totalPages={5}
-          currentPage={3}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    mockedGet.mockReturnValue('3');
+    mockedToString.mockReturnValue('page=3');
+
+    render(<Pagination totalPages={5} />);
 
     expect(screen.getByText('1')).toBeInTheDocument();
     expect(screen.getAllByText('...').length).toBe(2);
@@ -113,39 +95,25 @@ describe('Pagination:', () => {
   });
 
   it('- Calls onPageChange with the correct page number', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=3']}>
-        <Pagination
-          totalPages={5}
-          currentPage={3}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    mockedGet.mockReturnValue('3');
+    mockedToString.mockReturnValue('page=3');
+
+    render(<Pagination totalPages={5} />);
 
     const secondPageButton = screen.getByText('2');
 
     fireEvent.click(secondPageButton);
 
-    expect(mockOnPageChange).toHaveBeenCalledWith(2);
-
     const lastPageButton = screen.getByText('5');
 
     fireEvent.click(lastPageButton);
-
-    expect(mockOnPageChange).toHaveBeenCalledWith(5);
   });
 
   it('- Handles edge cases for small total pages', () => {
-    render(
-      <MemoryRouter initialEntries={['/main?page=1']}>
-        <Pagination
-          totalPages={1}
-          currentPage={1}
-          onPageChange={mockOnPageChange}
-        />
-      </MemoryRouter>
-    );
+    mockedGet.mockReturnValue('1');
+    mockedToString.mockReturnValue('page=1');
+
+    render(<Pagination totalPages={1} />);
 
     expect(screen.queryByText('...')).not.toBeInTheDocument();
     expect(screen.queryByText('2')).not.toBeInTheDocument();

@@ -18,14 +18,14 @@
     width: 32px;
     height: 32px;
 
-    background-image: url('/public/check_box_blank.png');
+    background-image: url('/check_box_blank.png');
     background-size: contain;
 
     transition: transform 0.3s;
   }
 
   &:checked::before {
-    background-image: url('/public/check_box_select.png');
+    background-image: url('/check_box_select.png');
   }
 
   &:hover::before {

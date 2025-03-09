@@ -1,14 +1,19 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+import FavouritesContext from '../../providers/FavouritesProvider/FavouritesContext.ts';
 
 import styles from './Flyout.module.scss';
 
-import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
-import { selectFavourites, unselectAll } from '@/store/favourites.ts';
-
 const Flyout: React.FC = (): ReactNode => {
+  const { favourites, unselectAll } = useContext(FavouritesContext);
   const [csv, setCSV] = useState<string>('');
-  const favourites = useAppSelector(selectFavourites);
-  const dispatch = useAppDispatch();
 
   const generateTable = useCallback(() => {
     let table = '';
@@ -55,7 +60,7 @@ const Flyout: React.FC = (): ReactNode => {
           <button
             type="button"
             className={styles['flyout-controls__unselect']}
-            onClick={() => dispatch(unselectAll())}
+            onClick={unselectAll}
           >
             Unselect All
           </button>
@@ -65,4 +70,4 @@ const Flyout: React.FC = (): ReactNode => {
   );
 };
 
-export default Flyout;
+export default memo(Flyout);

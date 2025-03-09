@@ -1,17 +1,8 @@
+import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ErrorBoundary from './ErrorBoundary';
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-
-  return {
-    ...actual,
-    MemoryRouter: actual.MemoryRouter,
-  };
-});
 
 describe('ErrorBoundary:', () => {
   beforeEach(() => {
@@ -24,11 +15,9 @@ describe('ErrorBoundary:', () => {
     };
 
     render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <ProblemChild />
-        </ErrorBoundary>
-      </MemoryRouter>
+      <ErrorBoundary>
+        <ProblemChild />
+      </ErrorBoundary>
     );
 
     await waitFor(() => {
@@ -46,11 +35,9 @@ describe('ErrorBoundary:', () => {
     };
 
     render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <ProblemChild />
-        </ErrorBoundary>
-      </MemoryRouter>
+      <ErrorBoundary>
+        <ProblemChild />
+      </ErrorBoundary>
     );
 
     await waitFor(() => {

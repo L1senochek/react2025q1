@@ -1,3 +1,5 @@
+import { ICharacter } from '@/model/App.ts';
+
 interface ICharacterDetails {
   id: number;
   name: string;
@@ -6,6 +8,10 @@ interface ICharacterDetails {
   species: string;
   gender: string;
   origin: { name: string };
+}
+
+export interface ICardModalProps {
+  character: ICharacter | null;
 }
 
 export default ICharacterDetails;

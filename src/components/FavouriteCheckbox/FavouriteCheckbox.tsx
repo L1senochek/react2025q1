@@ -1,33 +1,35 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, {
+  ReactElement,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+import FavouritesContext from '../../providers/FavouritesProvider/FavouritesContext.ts';
 
 import styles from './favourite-checkbox.module.scss';
 
-import { useAppDispatch, useAppSelector } from '@/hooks/redux.ts';
 import { ICharacter } from '@/model/App.ts';
-import {
-  addFavourite,
-  deleteFavourite,
-  selectFavouritesIds,
-} from '@/store/favourites.ts';
 
 interface IProps {
   character: ICharacter;
 }
 
 const FavouriteCheckbox: React.FC<IProps> = ({ character }): ReactElement => {
-  const favouritesIds = useAppSelector(selectFavouritesIds);
-  const dispatch = useAppDispatch();
+  const { favouritesIds, addFavourite, removeFavourite } =
+    useContext(FavouritesContext);
   const [checked, setChecked] = useState<boolean>(isCheckedInit());
 
   function isCheckedInit() {
-    if (favouritesIds) {
-      return favouritesIds.includes(character.id);
+    if (favouritesIds()) {
+      return favouritesIds().includes(character.id);
     }
     return false;
   }
 
   useEffect(() => {
-    if (favouritesIds.includes(character.id)) setChecked(true);
+    if (favouritesIds().includes(character.id)) setChecked(true);
     else setChecked(false);
   }, [character, favouritesIds]);
 
@@ -37,8 +39,8 @@ const FavouriteCheckbox: React.FC<IProps> = ({ character }): ReactElement => {
     const { target } = event;
 
     if (!target.checked) {
-      dispatch(deleteFavourite(character.id));
-    } else dispatch(addFavourite(character));
+      removeFavourite(character.id);
+    } else addFavourite(character);
 
     setChecked(!checked);
   };
@@ -59,4 +61,4 @@ const FavouriteCheckbox: React.FC<IProps> = ({ character }): ReactElement => {
   );
 };
 
-export default FavouriteCheckbox;
+export default memo(FavouriteCheckbox);

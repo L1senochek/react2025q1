@@ -1,5 +1,6 @@
 import React, { ReactElement, memo, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import styles from './pagination.module.scss';
 
@@ -7,27 +8,28 @@ import IPaginationProps from '@/model/Pagination.ts';
 
 const Pagination: React.FC<IPaginationProps> = ({
   totalPages,
-  currentPage,
-  onPageChange,
 }): ReactElement => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const currentPage = parseInt(searchParams.get('page') || '1');
 
   const handlePageChange = useCallback(
     (page: number) => {
       if (page > 0 && page <= totalPages) {
-        searchParams.set('page', page.toString());
-        setSearchParams(searchParams);
-        onPageChange(page);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('page', page.toString());
+        router.push(`/main?${params.toString()}`);
       }
     },
-    [searchParams, setSearchParams, onPageChange, totalPages]
+    [searchParams, totalPages, router]
   );
 
   const goToFirstPage = useCallback(() => {
-    searchParams.set('page', '1');
-    setSearchParams(searchParams);
-    onPageChange(1);
-  }, [onPageChange, searchParams, setSearchParams]);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1');
+    router.push(`/main?${params.toString()}`);
+  }, [searchParams, router]);
 
   const renderPageNumbers = useMemo(() => {
     const pages = [];

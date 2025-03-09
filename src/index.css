@@ -25,6 +25,7 @@ a:hover {
 
 body {
   display: flex;
+  flex-direction: column;
   place-items: center;
 
   min-width: 320px;
@@ -92,7 +93,7 @@ button:focus-visible {
 }
 
 [theme='light'] body,
-[theme='light'] #root {
+[theme='light']:root {
   color: rgb(0 0 0 / 87%);
   background-color: hsl(270deg 11% 79%);
 }

@@ -10,9 +10,15 @@ export interface ICharacterResponse {
   results: ICharacter[];
 }
 
+export interface IMainPageProps {
+  data: ICharacterResponse;
+  modalData?: {
+    character: ICharacter | null;
+  };
+}
+
 interface ISearchResultsProps {
   searchResults: ICharacter[];
-  onItemClick: (itemId: number) => void;
 }
 
 export default ISearchResultsProps;
