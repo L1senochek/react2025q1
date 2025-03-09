@@ -1,3 +1,5 @@
+'use client';
+
 import React, { PropsWithChildren, ReactElement, memo, useState } from 'react';
 
 import FavouritesContext from './FavouritesContext.ts';

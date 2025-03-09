@@ -8,6 +8,7 @@ import { ICharacter } from '@/model/App.ts';
 
 const mockedGet = vi.fn();
 const mockedToString = vi.fn();
+const mockedPush = vi.fn();
 
 vi.mock('next/navigation', async () => {
   const actual = await vi.importActual('next/navigation');
@@ -18,23 +19,8 @@ vi.mock('next/navigation', async () => {
       get: mockedGet,
       toString: mockedToString,
     }),
-  };
-});
-
-const mockedPush = vi.fn();
-
-vi.mock('next/router', async () => {
-  const actual = await vi.importActual('next/router');
-
-  return {
-    ...actual,
     useRouter: () => ({
       push: mockedPush,
-      events: {
-        on: vi.fn(),
-        off: vi.fn(),
-        emit: vi.fn(),
-      },
     }),
   };
 });
@@ -139,14 +125,13 @@ describe('SearchResults: ', (): void => {
 
   test('- Clicking on a card triggers navigation to detailed view', async () => {
     mockedToString.mockReturnValue('page=1');
-
+    mockedGet.mockReturnValue('1');
     render(
       <SearchResults
         results={mockSearchResults}
         info={{ pages: 1, next: '', prev: '', count: 20 }}
       />
     );
-
     const rickCard = screen.getByText('Rick Sanchez');
 
     fireEvent.click(rickCard);

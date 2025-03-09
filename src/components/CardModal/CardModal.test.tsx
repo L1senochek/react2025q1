@@ -7,23 +7,15 @@ import { mockedCharacter } from '../../utils/tests/mock.ts';
 
 const mockedPush = vi.fn();
 
-vi.mock('next/router', async (importOriginal) => {
-  const actual = (await importOriginal()) as typeof import('next/router');
-
-  return {
-    ...actual,
-    useRouter: () => ({
-      push: mockedPush,
-    }),
-  };
-});
-
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import('next/navigation');
 
   return {
     ...actual,
     useSearchParams: vi.fn(),
+    useRouter: () => ({
+      push: mockedPush,
+    }),
   };
 });
 

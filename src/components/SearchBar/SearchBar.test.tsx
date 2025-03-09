@@ -5,17 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import SearchBar from './SearchBar';
 
 const mockedPush = vi.fn();
-
-vi.mock('next/router', async (importOriginal) => {
-  const actual = (await importOriginal()) as typeof import('next/router');
-
-  return {
-    ...actual,
-    useRouter: () => ({
-      push: mockedPush,
-    }),
-  };
-});
+const mockedToString = vi.fn();
 
 vi.mock('next/navigation', async (importOriginal) => {
   const actual = (await importOriginal()) as typeof import('next/navigation');
@@ -24,6 +14,10 @@ vi.mock('next/navigation', async (importOriginal) => {
     ...actual,
     useSearchParams: () => ({
       get: vi.fn(),
+      toString: mockedToString,
+    }),
+    useRouter: () => ({
+      push: mockedPush,
     }),
   };
 });
