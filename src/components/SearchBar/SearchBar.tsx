@@ -1,3 +1,5 @@
+'use client';
+
 import React, {
   ChangeEvent,
   KeyboardEvent,
@@ -6,8 +8,7 @@ import React, {
   useCallback,
   useState,
 } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import styles from './searchbar.module.scss';
 

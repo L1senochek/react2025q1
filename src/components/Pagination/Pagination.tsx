@@ -1,6 +1,7 @@
+'use client';
+
 import React, { ReactElement, memo, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import styles from './pagination.module.scss';
 

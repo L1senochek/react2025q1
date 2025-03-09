@@ -1,3 +1,5 @@
+'use client';
+
 import React, { ReactElement, memo, useContext } from 'react';
 
 import ThemeContext from '../../providers/ThemeProvider/ThemeContext.ts';

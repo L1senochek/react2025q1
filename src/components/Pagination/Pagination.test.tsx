@@ -18,26 +18,19 @@ vi.mock('next/navigation', async () => {
       get: mockedGet,
       toString: mockedToString,
     }),
-  };
-});
-
-const mockedPush = vi.fn();
-
-vi.mock('next/router', async () => {
-  const actual = await vi.importActual('next/router');
-
-  return {
-    ...actual,
     useRouter: () => ({
       push: mockedPush,
     }),
   };
 });
 
+const mockedPush = vi.fn();
+
 describe('Pagination:', () => {
   it('- Updates the URL query parameter when page changes', async () => {
-    mockedGet.mockReturnValue('3');
+    window.history.pushState(null, '', '/main?page=3');
     mockedToString.mockReturnValue('page=3');
+    mockedGet.mockReturnValue('3');
 
     render(<Pagination totalPages={5} />);
 
@@ -55,8 +48,8 @@ describe('Pagination:', () => {
   });
 
   it('- Disables the previous page button when on the first page', () => {
-    mockedGet.mockReturnValue('1');
     mockedToString.mockReturnValue('page=1');
+    mockedGet.mockReturnValue('1');
 
     render(<Pagination totalPages={5} />);
 
@@ -66,8 +59,8 @@ describe('Pagination:', () => {
   });
 
   it('- Disables the next page button when on the last page', () => {
-    mockedGet.mockReturnValue('5');
     mockedToString.mockReturnValue('page=5');
+    mockedGet.mockReturnValue('5');
 
     render(<Pagination totalPages={5} />);
 
@@ -77,8 +70,8 @@ describe('Pagination:', () => {
   });
 
   it('- Renders the correct page numbers based on the current page', () => {
-    mockedGet.mockReturnValue('3');
     mockedToString.mockReturnValue('page=3');
+    mockedGet.mockReturnValue('3');
 
     render(<Pagination totalPages={5} />);
 
@@ -95,8 +88,8 @@ describe('Pagination:', () => {
   });
 
   it('- Calls onPageChange with the correct page number', () => {
-    mockedGet.mockReturnValue('3');
     mockedToString.mockReturnValue('page=3');
+    mockedGet.mockReturnValue('3');
 
     render(<Pagination totalPages={5} />);
 
@@ -110,8 +103,8 @@ describe('Pagination:', () => {
   });
 
   it('- Handles edge cases for small total pages', () => {
-    mockedGet.mockReturnValue('1');
     mockedToString.mockReturnValue('page=1');
+    mockedGet.mockReturnValue('1');
 
     render(<Pagination totalPages={1} />);
 

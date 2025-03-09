@@ -1,3 +1,5 @@
+'use client';
+
 import React, {
   ReactNode,
   memo,
@@ -7,8 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import { FavouriteCheckbox } from '../FavouriteCheckbox';
 
