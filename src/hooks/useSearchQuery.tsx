@@ -1,15 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const useSearchQuery = (
+  key: string,
   initialQuery: string = ''
 ): [string, (query: string) => void] => {
-  const [searchQuery, setSearchQuery] = useState(
-    () => localStorage.getItem('searchTerm') || initialQuery
-  );
+  const setQuery = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(key) || initialQuery;
+    }
+    return initialQuery;
+  }, [key, initialQuery]);
+
+  const [searchQuery, setSearchQuery] = useState(setQuery());
 
   useEffect(() => {
-    localStorage.setItem('searchTerm', searchQuery);
-  }, [searchQuery]);
+    if (typeof window !== 'undefined') localStorage.setItem(key, searchQuery);
+  }, [searchQuery, key]);
 
   return [searchQuery, setSearchQuery];
 };

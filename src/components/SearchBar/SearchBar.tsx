@@ -6,26 +6,34 @@ import React, {
   useCallback,
   useState,
 } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import styles from './searchbar.module.scss';
 
-import ISearchBarProps from '@/model/SearchBar';
-
-const SearchBar: React.FC<ISearchBarProps> = ({
-  searchTerm,
-  onInputChange,
-  onSearchSubmit,
-}): ReactElement => {
+const SearchBar: React.FC = (): ReactElement => {
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState<string>(
+    searchParams.get('query') || ''
+  );
+  const router = useRouter();
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>): void => {
       event.preventDefault();
-      onInputChange(event.target.value);
+      setSearchTerm(event.target.value);
     },
-    [onInputChange]
+    []
   );
+
+  const onSearchSubmit = useCallback(() => {
+    const params = new URLSearchParams();
+    params.set('query', searchTerm);
+    params.set('page', '1');
+    router.push(`/main?${params.toString()}`);
+  }, [searchTerm, router]);
 
   const handleSubmit = useCallback(
     (event: KeyboardEvent<HTMLInputElement> | React.FormEvent): void => {

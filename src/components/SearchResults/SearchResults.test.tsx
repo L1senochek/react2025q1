@@ -1,11 +1,43 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, test } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vitest';
 
 import SearchResults from './SearchResults';
 
 import { ICharacter } from '@/model/App.ts';
+
+const mockedGet = vi.fn();
+const mockedToString = vi.fn();
+
+vi.mock('next/navigation', async () => {
+  const actual = await vi.importActual('next/navigation');
+
+  return {
+    ...actual,
+    useSearchParams: () => ({
+      get: mockedGet,
+      toString: mockedToString,
+    }),
+  };
+});
+
+const mockedPush = vi.fn();
+
+vi.mock('next/router', async () => {
+  const actual = await vi.importActual('next/router');
+
+  return {
+    ...actual,
+    useRouter: () => ({
+      push: mockedPush,
+      events: {
+        on: vi.fn(),
+        off: vi.fn(),
+        emit: vi.fn(),
+      },
+    }),
+  };
+});
 
 describe('SearchResults: ', (): void => {
   const mockSearchResults: ICharacter[] = [
@@ -51,12 +83,10 @@ describe('SearchResults: ', (): void => {
 
   test('- Renders the correct number of character cards', () => {
     render(
-      <MemoryRouter>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={() => {}}
-        />
-      </MemoryRouter>
+      <SearchResults
+        results={mockSearchResults}
+        info={{ pages: 1, next: '', prev: '', count: 20 }}
+      />
     );
 
     const cards = screen.getAllByRole('heading', { level: 3 });
@@ -66,16 +96,22 @@ describe('SearchResults: ', (): void => {
 
   test('- Displays "No results found" message when there are no characters', () => {
     render(
-      <MemoryRouter>
-        <SearchResults searchResults={[]} onItemClick={() => {}} />
-      </MemoryRouter>
+      <SearchResults
+        results={[]}
+        info={{ pages: 0, next: '', prev: '', count: 0 }}
+      />
     );
 
     expect(screen.getByText(/no results found/i)).toBeTruthy();
   });
 
   test('- Displays appropriate message if no cards are present', () => {
-    render(<SearchResults searchResults={[]} onItemClick={() => {}} />);
+    render(
+      <SearchResults
+        results={[]}
+        info={{ pages: 0, next: '', prev: '', count: 0 }}
+      />
+    );
 
     const noResultsMessage = screen.getByText(/no results found/i);
 
@@ -84,12 +120,10 @@ describe('SearchResults: ', (): void => {
 
   test('- Renders images for each character card', () => {
     render(
-      <MemoryRouter>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={() => {}}
-        />
-      </MemoryRouter>
+      <SearchResults
+        results={mockSearchResults}
+        info={{ pages: 1, next: '', prev: '', count: 20 }}
+      />
     );
 
     const images = screen.getAllByRole('img');
@@ -104,66 +138,52 @@ describe('SearchResults: ', (): void => {
   });
 
   test('- Clicking on a card triggers navigation to detailed view', async () => {
-    const mockNavigate = vi.fn();
-
-    vi.mock('react-router-dom', async () => ({
-      ...(await vi.importActual('react-router-dom')),
-      useNavigate: () => mockNavigate,
-    }));
+    mockedToString.mockReturnValue('page=1');
 
     render(
-      <MemoryRouter initialEntries={['/main']}>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={(id: number) => mockNavigate(`/main/character/${id}`)}
-        />
-      </MemoryRouter>
+      <SearchResults
+        results={mockSearchResults}
+        info={{ pages: 1, next: '', prev: '', count: 20 }}
+      />
     );
 
     const rickCard = screen.getByText('Rick Sanchez');
 
     fireEvent.click(rickCard);
 
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith('/main/character/1');
-    });
+    expect(mockedPush).toHaveBeenCalledWith('/main/1?page=1');
   });
 
-  test('- Clicking on a card triggers an additional API call for detailed information', async () => {
-    const mockFetch = vi.spyOn(global, 'fetch').mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
-          id: 1,
-          name: 'Rick Sanchez',
-          status: 'Alive',
-          species: 'Human',
-          gender: 'Male',
-          origin: { name: 'Earth' },
-          image: 'https://example.com/rick.jpg',
-        }),
-        { status: 200 }
-      )
-    );
-
-    render(
-      <MemoryRouter initialEntries={['/main']}>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={(id: number) =>
-            fetch(`https://rickandmortyapi.com/api/character/${id}`)
-          }
-        />
-      </MemoryRouter>
-    );
-
-    const rickCard = screen.getByText('Rick Sanchez');
-
-    fireEvent.click(rickCard);
-
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith(
-        'https://rickandmortyapi.com/api/character/1'
-      );
-    });
-  });
+  // test('- Clicking on a card triggers an additional API call for detailed information', async () => {
+  //   const mockFetch = vi.spyOn(global, 'fetch').mockResolvedValueOnce(
+  //     new Response(
+  //       JSON.stringify({
+  //         id: 1,
+  //         name: 'Rick Sanchez',
+  //         status: 'Alive',
+  //         species: 'Human',
+  //         gender: 'Male',
+  //         origin: { name: 'Earth' },
+  //         image: 'https://example.com/rick.jpg',
+  //       }),
+  //       { status: 200 }
+  //     )
+  //   );
+  //
+  //   render(
+  //       <SearchResults
+  //         searchResults={mockSearchResults}
+  //       />
+  //   );
+  //
+  //   const rickCard = screen.getByText('Rick Sanchez');
+  //
+  //   fireEvent.click(rickCard);
+  //
+  //   await waitFor(() => {
+  //     expect(mockFetch).toHaveBeenCalledWith(
+  //       'https://rickandmortyapi.com/api/character/1'
+  //     );
+  //   });
+  // });
 });

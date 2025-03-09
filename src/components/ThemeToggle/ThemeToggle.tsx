@@ -1,8 +1,8 @@
 import React, { ReactElement, memo, useContext } from 'react';
 
-import styles from './theme-toggle.module.scss';
+import ThemeContext from '../../providers/ThemeProvider/ThemeContext.ts';
 
-import ThemeContext from '@/providers/ThemeProvider/ThemeContext.ts';
+import styles from './theme-toggle.module.scss';
 
 const ThemeToggle: React.FC = (): ReactElement => {
   const { isLightMode, setLightMode } = useContext(ThemeContext);

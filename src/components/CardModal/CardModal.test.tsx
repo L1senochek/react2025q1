@@ -1,62 +1,42 @@
+import '@testing-library/jest-dom';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, Params, Route, Routes } from 'react-router-dom';
 import { describe, expect, test, vi } from 'vitest';
 
 import CardModal from './CardModal';
+import { mockedCharacter } from '../../utils/tests/mock.ts';
 
-const mockedNavigate = vi.fn();
+const mockedPush = vi.fn();
 
-vi.mock('react-router', async (importOriginal) => {
-  const actual = (await importOriginal()) as typeof import('react-router');
+vi.mock('next/router', async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import('next/router');
 
   return {
     ...actual,
-    useNavigate: () => mockedNavigate,
-    useParams: (): Readonly<Params<string>> => ({ characterId: '1' }),
+    useRouter: () => ({
+      push: mockedPush,
+    }),
+  };
+});
+
+vi.mock('next/navigation', async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import('next/navigation');
+
+  return {
+    ...actual,
+    useSearchParams: vi.fn(),
   };
 });
 
 global.fetch = vi.fn();
 
 describe('CardModal: ', (): void => {
-  test('- Renders loading state initially', async () => {
-    render(
-      <MemoryRouter>
-        <CardModal />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/Loading details.../i)).toBeTruthy();
-  });
-
-  test('- Renders loading state initially', async () => {
-    render(
-      <MemoryRouter>
-        <CardModal />
-      </MemoryRouter>
-    );
-
-    expect(screen.getByText(/Loading details.../i)).toBeTruthy();
-  });
-
   test('- Hides the component when the close button is clicked', async () => {
-    render(
-      <MemoryRouter initialEntries={['/main/character/1']}>
-        <Routes>
-          <Route path="/main/character/:characterId" element={<CardModal />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://rickandmortyapi.com/api/character/1'
-      )
-    );
+    render(<CardModal character={mockedCharacter} />);
 
     const closeButton = screen.getByText('Close');
-
     fireEvent.click(closeButton);
+
+    await waitFor(() => expect(mockedPush).toHaveBeenCalledWith('/main?'));
 
     expect(screen.queryByText('Rick Sanchez')).not.toBeTruthy();
   });
@@ -80,19 +60,7 @@ describe('CardModal: ', (): void => {
       )
     );
 
-    render(
-      <MemoryRouter initialEntries={['/main/character/1']}>
-        <Routes>
-          <Route path="/main/character/:characterId" element={<CardModal />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    await waitFor(() =>
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://rickandmortyapi.com/api/character/1'
-      )
-    );
+    render(<CardModal character={mockedCharacter} />);
 
     expect(screen.getByText('Rick Sanchez')).toBeTruthy();
 
@@ -107,18 +75,8 @@ describe('CardModal: ', (): void => {
   });
 
   it('- Displays "Character details not found" when API fails', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network Error'));
+    render(<CardModal character={null} />);
 
-    render(
-      <MemoryRouter initialEntries={['/main/character/1']}>
-        <Routes>
-          <Route path="/main/character/:characterId" element={<CardModal />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Character details not found')).toBeTruthy();
-    });
+    expect(screen.getByText('Character details not found')).toBeTruthy();
   });
 });

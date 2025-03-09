@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import ThemeContext from '@/providers/ThemeProvider/ThemeContext.ts';
+import ThemeContext from './ThemeContext.ts';
 
 const ThemeProvider: React.FC<PropsWithChildren> = ({
   children,

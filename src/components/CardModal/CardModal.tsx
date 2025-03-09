@@ -7,46 +7,26 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
+
+import { FavouriteCheckbox } from '../FavouriteCheckbox';
 
 import styles from './card-modal.module.scss';
 
-import { FavouriteCheckbox } from '@/components/FavouriteCheckbox';
-import { ICharacter } from '@/model/App.ts';
-import { useGetCharacterQuery } from '@/store/api.ts';
+import { ICardModalProps } from '@/model/CardModal.ts';
 
-const CardModal: React.FC = (): ReactNode => {
-  const { characterId } = useParams<{ characterId: string }>();
-  const [character, setCharacter] = useState<ICharacter | null>(null);
+const CardModal: React.FC<ICardModalProps> = ({ character }): ReactNode => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const modalRef = useRef<HTMLDivElement | null>(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const { data, isFetching } = useGetCharacterQuery(characterId, {
-    skip: !characterId,
-  });
-
-  useEffect(() => {
-    if (data) setCharacter(data);
-  }, [data]);
-
-  useEffect(() => {
-    if (location.pathname.includes(`/main/character/${characterId}`)) {
-      setIsOpen(true);
-    }
-  }, [characterId, location.pathname]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleClose = useCallback(() => {
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    const savedPage = localStorage.getItem('currentPage') || '1';
-
-    navigate(
-      `/main?page=${savedPage}${savedSearchTerm ? `&query=${savedSearchTerm}` : ''}`
-    );
+    const params = new URLSearchParams(searchParams);
+    router.push(`/main?${params.toString()}`);
     setIsOpen(false);
-  }, [navigate]);
+  }, [searchParams, router]);
 
   const handleOutsideClick = useCallback(
     (event: MouseEvent) => {
@@ -118,11 +98,7 @@ const CardModal: React.FC = (): ReactNode => {
           </button>
         </header>
 
-        {isFetching ? (
-          <section>
-            <p>Loading details...</p>
-          </section>
-        ) : character ? (
+        {character ? (
           <section className={styles['character-card']}>
             <FavouriteCheckbox character={character} />
             <h2 className={styles['card-details__header']}>{character.name}</h2>

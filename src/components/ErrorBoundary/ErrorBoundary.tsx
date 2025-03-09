@@ -1,10 +1,11 @@
 import { Component } from 'react';
 
+import { ErrorBoundaryFallback } from '../../pages/Fallback';
+
 import {
   IErrorBoundaryProps,
   IErrorBoundaryState,
 } from '@/model/ErrorBoundary';
-import { ErrorBoundaryFallback } from '@/pages/Fallback';
 
 class ErrorBoundary extends Component<
   IErrorBoundaryProps,
