@@ -1,6 +1,5 @@
 import { FC, ReactElement } from 'react';
-import { useRouteError } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useRouteError } from 'react-router';
 
 import styles from './error-message.module.scss';
 

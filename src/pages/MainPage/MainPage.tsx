@@ -1,67 +1,63 @@
 import {
   FC,
   ReactElement,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
-import { Provider } from 'react-redux';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useNavigation,
+  useSearchParams,
+} from 'react-router';
 
 import styles from './main-page.module.scss';
 
-import { CardModal } from '@/components/CardModal';
 import { Flyout } from '@/components/Flyout';
 import { Pagination } from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
 import { SearchResults } from '@/components/SearchResults';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import useSearchQuery from '@/hooks/useSearchQuery';
-import { IAppProps, ICharacter } from '@/model/App';
-import { useGetCharactersQuery } from '@/store/api.ts';
-import { store } from '@/store/store.ts';
+import useLocalStorage from '@/hooks/useLocalStorage.tsx';
+import { ICharacter } from '@/model/App';
+import { ICharacterResponse } from '@/model/SearchResults.ts';
 
-const MainPage: FC<IAppProps> = (): ReactElement => {
+const MainPage: FC<ICharacterResponse> = ({ results, info }): ReactElement => {
   const [characters, setCharacters] = useState<ICharacter[]>([]);
   const [throwError, setThrowError] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>('');
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useSearchQuery(
-    searchParams.get('query') || localStorage.getItem('searchTerm') || ''
-  );
-  const [selectedCharacterId, setSelectedCharacterId] = useState<number | null>(
-    null
+  const [curPage, setCurPage] = useLocalStorage('currentPage');
+  const [lsSearchTerm, setLsSearchTerm] = useLocalStorage('searchTerm');
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get('query') || lsSearchTerm || ''
   );
   const navigate = useNavigate();
   const currentPage = useMemo(() => {
-    return parseInt(
-      searchParams.get('page') || localStorage.getItem('currentPage') || '1',
-      10
-    );
-  }, [searchParams]);
+    return parseInt(searchParams.get('page') || curPage || '1', 10);
+  }, [curPage, searchParams]);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const { data, isFetching } = useGetCharactersQuery(query);
+  const location = useLocation();
+  const navigation = useNavigation();
+  const isNavigating = Boolean(navigation.location);
 
   useEffect(() => {
-    if (data) {
-      setCharacters(data.results);
-      setTotalPages(data.info.pages || 1);
+    if (!searchParams.toString() && !location.pathname.includes('character')) {
+      if (searchTerm) searchParams.set('query', searchTerm);
+      searchParams.set('page', currentPage.toString());
+      setSearchParams(searchParams);
     }
-  }, [data]);
+  }, [currentPage, location, searchParams, searchTerm, setSearchParams]);
 
-  useEffect((): void => {
-    const savedSearchTerm = localStorage.getItem('searchTerm');
-
-    if (savedSearchTerm) {
-      setSearchTerm(savedSearchTerm);
-      setQuery(`name=${savedSearchTerm}&page=${currentPage}`);
-    } else {
-      setQuery('');
+  useEffect(() => {
+    if (results && info) {
+      setCharacters(results);
+      setTotalPages(info.pages || 1);
     }
-    localStorage.setItem('currentPage', currentPage.toString());
-  }, [currentPage, setQuery, setSearchTerm]);
+  }, [results, info]);
 
   const handleSearchInputChange = useCallback(
     (value: string): void => {
@@ -75,24 +71,23 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
     else searchParams.delete('query');
     searchParams.set('page', '1');
     setSearchParams(searchParams);
-    setQuery(`${searchTerm ? `name=${searchTerm}` : ''}&page=1`);
-  }, [searchTerm, searchParams, setSearchParams]);
+    setLsSearchTerm(searchTerm);
+  }, [searchTerm, searchParams, setSearchParams, setLsSearchTerm]);
 
   const handlePageChange = useCallback(
     (newPage: number): void => {
       searchParams.set('page', newPage.toString());
       setSearchParams(searchParams);
-      localStorage.setItem('currentPage', newPage.toString());
+      setCurPage(newPage.toString());
     },
-    [searchParams, setSearchParams]
+    [searchParams, setCurPage, setSearchParams]
   );
 
   const handleItemClick = useCallback(
     (characterId: number): void => {
-      setSelectedCharacterId(characterId);
       navigate(`/main/character/${characterId}`);
     },
-    [navigate, setSelectedCharacterId]
+    [navigate]
   );
 
   const handleThrowError = (): void => setThrowError(true);
@@ -115,26 +110,27 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
         <button onClick={handleThrowError}>Throw Error</button>
       </header>
       <main className={styles['middle-section']}>
-        <Provider store={store}>
-          {isFetching ? (
-            <div>Loading...</div>
-          ) : (
+        {isNavigating ? (
+          <div>Loading...</div>
+        ) : (
+          <>
             <SearchResults
               searchResults={characters}
               onItemClick={handleItemClick}
             />
-          )}
-          <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
-          <Flyout />
-          {selectedCharacterId && <CardModal />}
-        </Provider>
+            <Pagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+
+        <Flyout />
+        <Outlet />
       </main>
     </>
   );
 };
 
-export default MainPage;
+export default memo(MainPage);

@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import { reactRouter } from '@react-router/dev/vite';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import viteStylelint from 'vite-plugin-stylelint';
@@ -14,7 +14,10 @@ const viteStylelintOptions = {
 };
 
 export default defineConfig({
-  plugins: [react(), viteStylelint(viteStylelintOptions)],
+  plugins: [
+    !process.env.VITEST && reactRouter(),
+    viteStylelint(viteStylelintOptions),
+  ],
   // resolve: { alias: { '@': '/src' } },
   resolve: {
     alias: [
@@ -33,8 +36,6 @@ export default defineConfig({
         '**/*.test.tsx',
         '**/*.spec.tsx',
         'src/__tests__/setup.ts',
-        'src/App.tsx',
-        'src/main.tsx',
       ],
     },
     globals: true,

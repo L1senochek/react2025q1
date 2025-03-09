@@ -1,16 +1,21 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter, useSearchParams } from 'react-router-dom';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { useSearchParams } from 'react-router';
 import { Mock, describe, expect, test, vi } from 'vitest';
 
 import MainPage from '@/pages/MainPage/MainPage';
+import { mockSearchResults } from '@/utils/tests/mock.ts';
+import { renderWithProviders } from '@/utils/tests/render-with-provider.tsx';
 
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router');
 
   return {
     ...actual,
     useSearchParams: vi.fn(),
     useNavigate: vi.fn(),
+    useNavigation: vi.fn(() => ({
+      location: vi.fn(),
+    })),
   };
 });
 
@@ -28,10 +33,11 @@ describe('MainPage:', () => {
       mockSetSearchParams,
     ]);
 
-    render(
-      <MemoryRouter initialEntries={['/main']}>
-        <MainPage />
-      </MemoryRouter>
+    renderWithProviders(
+      <MainPage
+        results={mockSearchResults}
+        info={{ pages: 1, count: 2, next: null, prev: null }}
+      />
     );
 
     const input = screen.getByPlaceholderText(/search characters/i);
@@ -54,10 +60,11 @@ describe('MainPage:', () => {
       mockSetSearchParams,
     ]);
 
-    render(
-      <MemoryRouter initialEntries={['/main']}>
-        <MainPage />
-      </MemoryRouter>
+    renderWithProviders(
+      <MainPage
+        results={mockSearchResults}
+        info={{ pages: 1, count: 2, next: null, prev: null }}
+      />
     );
 
     await waitFor(() => {
