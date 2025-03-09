@@ -6,22 +6,27 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { Provider } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import styles from './main-page.module.scss';
 
 import { CardModal } from '@/components/CardModal';
+import { Flyout } from '@/components/Flyout';
 import { Pagination } from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
 import { SearchResults } from '@/components/SearchResults';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import useSearchQuery from '@/hooks/useSearchQuery';
-import { IAppProps } from '@/model/App';
+import { IAppProps, ICharacter } from '@/model/App';
+import { useGetCharactersQuery } from '@/store/api.ts';
+import { store } from '@/store/store.ts';
 
 const MainPage: FC<IAppProps> = (): ReactElement => {
-  const [characters, setCharacters] = useState([]);
-  const [, setError] = useState<null | Error>(null);
+  const [characters, setCharacters] = useState<ICharacter[]>([]);
   const [throwError, setThrowError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useSearchQuery(
     searchParams.get('query') || localStorage.getItem('searchTerm') || ''
@@ -37,44 +42,26 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
     );
   }, [searchParams]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const { data, isFetching } = useGetCharactersQuery(query);
 
-  const fetchCharacters = useCallback(
-    async (query: string, page: number = 1): Promise<void> => {
-      setIsLoading(true);
-      try {
-        const url = `https://rickandmortyapi.com/api/character?page=${page}&name=${query}`;
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          setCharacters([]);
-          return;
-        }
-
-        const data = await response.json();
-
-        setCharacters(data.results);
-        setTotalPages(data.info.pages || 1);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(error instanceof Error ? error : new Error('Unknown error'));
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  useEffect(() => {
+    if (data) {
+      setCharacters(data.results);
+      setTotalPages(data.info.pages || 1);
+    }
+  }, [data]);
 
   useEffect((): void => {
     const savedSearchTerm = localStorage.getItem('searchTerm');
 
     if (savedSearchTerm) {
       setSearchTerm(savedSearchTerm);
-      void fetchCharacters(savedSearchTerm, currentPage);
+      setQuery(`name=${savedSearchTerm}&page=${currentPage}`);
     } else {
-      void fetchCharacters('', currentPage);
+      setQuery('');
     }
     localStorage.setItem('currentPage', currentPage.toString());
-  }, [currentPage, fetchCharacters, setSearchTerm]);
+  }, [currentPage, setQuery, setSearchTerm]);
 
   const handleSearchInputChange = useCallback(
     (value: string): void => {
@@ -83,21 +70,21 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
     [setSearchTerm]
   );
 
-  const handleSearchSubmit = useCallback(async (): Promise<void> => {
-    searchParams.set('query', searchTerm);
+  const handleSearchSubmit = useCallback(() => {
+    if (searchTerm) searchParams.set('query', searchTerm);
+    else searchParams.delete('query');
     searchParams.set('page', '1');
     setSearchParams(searchParams);
-    await fetchCharacters(searchTerm, 1);
-  }, [searchTerm, searchParams, setSearchParams, fetchCharacters]);
+    setQuery(`${searchTerm ? `name=${searchTerm}` : ''}&page=1`);
+  }, [searchTerm, searchParams, setSearchParams]);
 
   const handlePageChange = useCallback(
-    async (newPage: number): Promise<void> => {
+    (newPage: number): void => {
       searchParams.set('page', newPage.toString());
       setSearchParams(searchParams);
       localStorage.setItem('currentPage', newPage.toString());
-      await fetchCharacters(searchTerm, newPage);
     },
-    [searchTerm, searchParams, setSearchParams, fetchCharacters]
+    [searchParams, setSearchParams]
   );
 
   const handleItemClick = useCallback(
@@ -117,28 +104,34 @@ const MainPage: FC<IAppProps> = (): ReactElement => {
   return (
     <>
       <header className={styles['top-section']}>
-        <SearchBar
-          searchTerm={searchTerm}
-          onInputChange={handleSearchInputChange}
-          onSearchSubmit={handleSearchSubmit}
-        />
+        <div className={styles['top-section_controls']}>
+          <SearchBar
+            searchTerm={searchTerm}
+            onInputChange={handleSearchInputChange}
+            onSearchSubmit={handleSearchSubmit}
+          />
+          <ThemeToggle />
+        </div>
         <button onClick={handleThrowError}>Throw Error</button>
       </header>
       <main className={styles['middle-section']}>
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : (
-          <SearchResults
-            searchResults={characters}
-            onItemClick={handleItemClick}
+        <Provider store={store}>
+          {isFetching ? (
+            <div>Loading...</div>
+          ) : (
+            <SearchResults
+              searchResults={characters}
+              onItemClick={handleItemClick}
+            />
+          )}
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
           />
-        )}
-        <Pagination
-          totalPages={totalPages}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-        {selectedCharacterId && <CardModal />}
+          <Flyout />
+          {selectedCharacterId && <CardModal />}
+        </Provider>
       </main>
     </>
   );

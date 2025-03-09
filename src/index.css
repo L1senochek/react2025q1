@@ -90,3 +90,13 @@ button:focus-visible {
     background-color: hsl(0deg 0% 10%);
   }
 }
+
+[theme='light'] body,
+[theme='light'] #root {
+  color: rgb(0 0 0 / 87%);
+  background-color: hsl(270deg 11% 79%);
+}
+
+[theme='light'] button {
+  background-color: hsl(264deg 7% 29%);
+}

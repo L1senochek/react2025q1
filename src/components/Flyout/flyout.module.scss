@@ -1,0 +1,60 @@
+.flyout {
+  position: fixed;
+  bottom: 5px;
+  left: 5px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  padding: 1rem;
+  border: 1px solid rgb(255 255 255 / 87%);
+  border-radius: 8px;
+
+  background-color: hsl(180deg 100% 6%);
+
+  &-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    &__download {
+      cursor: pointer;
+
+      display: block;
+
+      padding: 0.6em 1.2em;
+      border: 1px solid transparent;
+      border-radius: 8px;
+
+      font-family: inherit;
+      font-size: 1em;
+      font-weight: 500;
+      line-height: normal;
+      color: rgb(255 255 255 / 87%);
+
+      background-color: hsl(0deg 0% 10%);
+
+      transition:
+        border-color 0.25s,
+        box-shadow 0.25s;
+
+      &:hover {
+        border-color: hsl(180deg 100% 50%);
+        color: rgb(255 255 255 / 87%);
+        box-shadow: 0 0 15px 1px hsl(180deg 100% 50%);
+      }
+    }
+  }
+}
+
+[theme='light'] .flyout {
+  border-color: rgb(0 0 0 / 87%);
+  background-color: hsl(270deg 11% 79%);
+
+  &-controls {
+    &__download {
+      background-color: hsl(264deg 7% 29%);
+    }
+  }
+}

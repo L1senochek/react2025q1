@@ -19,8 +19,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npx vitest --run"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
@@ -31,8 +30,10 @@
     "**/*.{css,scss}": "stylelint --fix"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.6.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {

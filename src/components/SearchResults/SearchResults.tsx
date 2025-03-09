@@ -2,6 +2,7 @@ import React, { ReactElement, memo } from 'react';
 
 import styles from './search-results.module.scss';
 
+import { FavouriteCheckbox } from '@/components/FavouriteCheckbox';
 import ISearchResultsProps from '@/model/SearchResults';
 
 const SearchResults: React.FC<ISearchResultsProps> = ({
@@ -19,6 +20,7 @@ const SearchResults: React.FC<ISearchResultsProps> = ({
                 className={styles['search-results__card']}
                 onClick={() => onItemClick(character.id)}
               >
+                <FavouriteCheckbox character={character} />
                 <div className={styles['search-results__header']}>
                   <h3>{character.name}</h3>
                   <img

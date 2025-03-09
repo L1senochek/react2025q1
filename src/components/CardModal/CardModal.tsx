@@ -12,41 +12,29 @@ import { useLocation } from 'react-router-dom';
 
 import styles from './card-modal.module.scss';
 
-import ICharacterDetails from '@/model/CardModal.ts';
+import { FavouriteCheckbox } from '@/components/FavouriteCheckbox';
+import { ICharacter } from '@/model/App.ts';
+import { useGetCharacterQuery } from '@/store/api.ts';
 
 const CardModal: React.FC = (): ReactNode => {
   const { characterId } = useParams<{ characterId: string }>();
-  const [character, setCharacter] = useState<ICharacterDetails | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [character, setCharacter] = useState<ICharacter | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { data, isFetching } = useGetCharacterQuery(characterId, {
+    skip: !characterId,
+  });
+
+  useEffect(() => {
+    if (data) setCharacter(data);
+  }, [data]);
+
   useEffect(() => {
     if (location.pathname.includes(`/main/character/${characterId}`)) {
       setIsOpen(true);
-      setIsLoading(true);
-      (async () => {
-        try {
-          const response = await fetch(
-            `https://rickandmortyapi.com/api/character/${characterId}`
-          );
-
-          if (!response.ok) {
-            setCharacter(null);
-            return;
-          }
-          const data = await response.json();
-
-          setCharacter(data);
-        } catch (error) {
-          console.error('Error fetching details:', error);
-          setCharacter(null);
-        } finally {
-          setIsLoading(false);
-        }
-      })();
     }
   }, [characterId, location.pathname]);
 
@@ -130,12 +118,13 @@ const CardModal: React.FC = (): ReactNode => {
           </button>
         </header>
 
-        {isLoading ? (
+        {isFetching ? (
           <section>
             <p>Loading details...</p>
           </section>
         ) : character ? (
           <section className={styles['character-card']}>
+            <FavouriteCheckbox character={character} />
             <h2 className={styles['card-details__header']}>{character.name}</h2>
             <figure className={styles['character-image']}>
               <img

@@ -1,0 +1,38 @@
+.theme-toggle {
+  width: 0;
+  height: 0;
+  appearance: none;
+
+  &::before {
+    cursor: pointer;
+    content: '';
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: block;
+
+    width: 48px;
+    height: 48px;
+
+    background-image: url('/public/light_mode.png');
+    background-size: contain;
+
+    transition: all 0.3s;
+  }
+
+  &:hover::before {
+    background-image: url('/public/light_mode_hover.png');
+  }
+}
+
+[theme='light'] .theme-toggle {
+  &::before {
+    background-image: url('/public/dark_mode.png');
+  }
+
+  &:hover::before {
+    background-image: url('/public/dark_mode_hover.png');
+  }
+}

@@ -5,6 +5,13 @@
   align-items: center;
 
   width: 100%;
+
+  &_controls {
+    position: relative;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
 }
 
 .middle-section {
