@@ -1,12 +1,11 @@
 import React from 'react';
-import { GetServerSidePropsContext } from 'next';
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
 
 import { CardModal } from '../../src/components/CardModal';
 import { Flyout } from '../../src/components/Flyout';
 import { Layout } from '../../src/components/Layout';
 import { SearchResults } from '../../src/components/SearchResults';
-import { BASE_URL } from '../../src/constants';
-import { IMainPageProps } from '../../src/model/SearchResults';
+import { BASE_URL } from '../../src/utils/constants';
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -47,7 +46,9 @@ export const getServerSideProps = async (
   return { props: { data } };
 };
 
-const Page: React.FC<IMainPageProps> = ({ data, modalData }) => {
+const Page: React.FC<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ data, modalData }) => {
   return (
     <Layout>
       {data && (
