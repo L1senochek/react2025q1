@@ -1,62 +1,16 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 
 import SearchResults from './SearchResults';
 
-import { ICharacter } from '@/model/App.ts';
+import { mockSearchResults } from '@/utils/tests/mock.ts';
+import { renderWithProviders } from '@/utils/tests/render-with-provider.tsx';
 
 describe('SearchResults: ', (): void => {
-  const mockSearchResults: ICharacter[] = [
-    {
-      id: 1,
-      name: 'Rick Sanchez',
-      status: 'Alive',
-      species: 'Human',
-      gender: 'Male',
-      origin: {
-        name: 'Earth',
-        url: '',
-      },
-      location: {
-        name: 'Citadel of Ricks',
-        url: '',
-      },
-      image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
-      episode: [],
-      url: '',
-      created: '',
-    },
-    {
-      id: 2,
-      name: 'Morty Smith',
-      status: 'Alive',
-      species: 'Human',
-      gender: 'Male',
-      origin: {
-        name: 'Earth',
-        url: '',
-      },
-      location: {
-        name: 'Earth',
-        url: '',
-      },
-      image: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
-      episode: [],
-      url: '',
-      created: '',
-    },
-  ];
-
   test('- Renders the correct number of character cards', () => {
-    render(
-      <MemoryRouter>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={() => {}}
-        />
-      </MemoryRouter>
+    renderWithProviders(
+      <SearchResults searchResults={mockSearchResults} onItemClick={() => {}} />
     );
 
     const cards = screen.getAllByRole('heading', { level: 3 });
@@ -65,17 +19,17 @@ describe('SearchResults: ', (): void => {
   });
 
   test('- Displays "No results found" message when there are no characters', () => {
-    render(
-      <MemoryRouter>
-        <SearchResults searchResults={[]} onItemClick={() => {}} />
-      </MemoryRouter>
+    renderWithProviders(
+      <SearchResults searchResults={[]} onItemClick={() => {}} />
     );
 
     expect(screen.getByText(/no results found/i)).toBeTruthy();
   });
 
   test('- Displays appropriate message if no cards are present', () => {
-    render(<SearchResults searchResults={[]} onItemClick={() => {}} />);
+    renderWithProviders(
+      <SearchResults searchResults={[]} onItemClick={() => {}} />
+    );
 
     const noResultsMessage = screen.getByText(/no results found/i);
 
@@ -83,13 +37,8 @@ describe('SearchResults: ', (): void => {
   });
 
   test('- Renders images for each character card', () => {
-    render(
-      <MemoryRouter>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={() => {}}
-        />
-      </MemoryRouter>
+    renderWithProviders(
+      <SearchResults searchResults={mockSearchResults} onItemClick={() => {}} />
     );
 
     const images = screen.getAllByRole('img');
@@ -106,18 +55,16 @@ describe('SearchResults: ', (): void => {
   test('- Clicking on a card triggers navigation to detailed view', async () => {
     const mockNavigate = vi.fn();
 
-    vi.mock('react-router-dom', async () => ({
-      ...(await vi.importActual('react-router-dom')),
+    vi.mock('react-router', async () => ({
+      ...(await vi.importActual('react-router')),
       useNavigate: () => mockNavigate,
     }));
 
-    render(
-      <MemoryRouter initialEntries={['/main']}>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={(id: number) => mockNavigate(`/main/character/${id}`)}
-        />
-      </MemoryRouter>
+    renderWithProviders(
+      <SearchResults
+        searchResults={mockSearchResults}
+        onItemClick={(id: number) => mockNavigate(`/main/character/${id}`)}
+      />
     );
 
     const rickCard = screen.getByText('Rick Sanchez');
@@ -145,15 +92,13 @@ describe('SearchResults: ', (): void => {
       )
     );
 
-    render(
-      <MemoryRouter initialEntries={['/main']}>
-        <SearchResults
-          searchResults={mockSearchResults}
-          onItemClick={(id: number) =>
-            fetch(`https://rickandmortyapi.com/api/character/${id}`)
-          }
-        />
-      </MemoryRouter>
+    renderWithProviders(
+      <SearchResults
+        searchResults={mockSearchResults}
+        onItemClick={(id: number) =>
+          fetch(`https://rickandmortyapi.com/api/character/${id}`)
+        }
+      />
     );
 
     const rickCard = screen.getByText('Rick Sanchez');

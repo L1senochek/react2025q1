@@ -11,7 +11,7 @@ import sortExports from 'eslint-plugin-sort-exports';
 import importNewlines from 'eslint-plugin-import-newlines';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', '.react-router'] },
   {
     extends: [
       js.configs.recommended,

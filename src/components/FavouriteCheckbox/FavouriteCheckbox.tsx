@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, memo, useEffect, useState } from 'react';
 
 import styles from './favourite-checkbox.module.scss';
 
@@ -59,4 +59,4 @@ const FavouriteCheckbox: React.FC<IProps> = ({ character }): ReactElement => {
   );
 };
 
-export default FavouriteCheckbox;
+export default memo(FavouriteCheckbox);

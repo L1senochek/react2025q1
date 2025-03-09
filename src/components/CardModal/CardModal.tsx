@@ -7,46 +7,37 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 import styles from './card-modal.module.scss';
 
 import { FavouriteCheckbox } from '@/components/FavouriteCheckbox';
+import useLocalStorage from '@/hooks/useLocalStorage.tsx';
 import { ICharacter } from '@/model/App.ts';
-import { useGetCharacterQuery } from '@/store/api.ts';
 
-const CardModal: React.FC = (): ReactNode => {
-  const { characterId } = useParams<{ characterId: string }>();
+interface Props {
+  data: ICharacter | undefined;
+}
+
+const CardModal: React.FC<Props> = ({ data }): ReactNode => {
   const [character, setCharacter] = useState<ICharacter | null>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
   const modalRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const { data, isFetching } = useGetCharacterQuery(characterId, {
-    skip: !characterId,
-  });
+  const [searchTerm] = useLocalStorage('searchTerm');
+  const [currentPage] = useLocalStorage('currentPage');
 
   useEffect(() => {
     if (data) setCharacter(data);
   }, [data]);
 
-  useEffect(() => {
-    if (location.pathname.includes(`/main/character/${characterId}`)) {
-      setIsOpen(true);
-    }
-  }, [characterId, location.pathname]);
-
   const handleClose = useCallback(() => {
-    const savedSearchTerm = localStorage.getItem('searchTerm') || '';
-    const savedPage = localStorage.getItem('currentPage') || '1';
+    const savedSearchTerm = searchTerm || '';
+    const savedPage = currentPage || '1';
 
     navigate(
       `/main?page=${savedPage}${savedSearchTerm ? `&query=${savedSearchTerm}` : ''}`
     );
-    setIsOpen(false);
-  }, [navigate]);
+  }, [currentPage, navigate, searchTerm]);
 
   const handleOutsideClick = useCallback(
     (event: MouseEvent) => {
@@ -61,14 +52,12 @@ const CardModal: React.FC = (): ReactNode => {
   );
 
   useEffect(() => {
-    if (isOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
-    }
+    document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick);
     };
-  }, [handleOutsideClick, isOpen]);
+  }, [handleOutsideClick]);
 
   const characterDetails = useMemo(() => {
     if (!character) return null;
@@ -98,31 +87,17 @@ const CardModal: React.FC = (): ReactNode => {
     ));
   }, [character]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
     <>
-      <div
-        className={`${styles['modal-overlay']} ${isOpen ? styles.visible : styles.hidden}`}
-        onClick={handleClose}
-      ></div>
-      <article
-        className={`${styles['card-details']} ${isOpen ? '' : styles.hidden}`}
-        ref={modalRef}
-      >
+      <div className={`${styles['modal-overlay']}`} onClick={handleClose}></div>
+      <article className={`${styles['card-details']}`} ref={modalRef}>
         <header className={styles['card-details__header']}>
           <button className={styles['close-btn']} onClick={handleClose}>
             Close
           </button>
         </header>
 
-        {isFetching ? (
-          <section>
-            <p>Loading details...</p>
-          </section>
-        ) : character ? (
+        {character ? (
           <section className={styles['character-card']}>
             <FavouriteCheckbox character={character} />
             <h2 className={styles['card-details__header']}>{character.name}</h2>

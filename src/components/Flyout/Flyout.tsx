@@ -1,4 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 
 import styles from './Flyout.module.scss';
 
@@ -65,4 +71,4 @@ const Flyout: React.FC = (): ReactNode => {
   );
 };
 
-export default Flyout;
+export default memo(Flyout);

@@ -1,5 +1,5 @@
 import React, { ReactElement, memo, useCallback, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 import styles from './pagination.module.scss';
 
