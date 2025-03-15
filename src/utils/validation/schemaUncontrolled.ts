@@ -2,7 +2,7 @@ import * as yup from 'yup';
 import { passwordOne } from './schema';
 import { initialCountries } from '@/utils/constants/constants.ts';
 
-const schemaUncontrol = yup
+const schemaUncontrolled = yup
   .object()
   .shape({
     name: yup
@@ -46,4 +46,4 @@ const schemaUncontrol = yup
   })
   .required();
 
-export default schemaUncontrol;
+export default schemaUncontrolled;

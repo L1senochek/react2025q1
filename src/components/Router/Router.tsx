@@ -6,7 +6,7 @@ import {
 import Layout from '@/components/Layout/Layout';
 import ErrorMessage from '@/components/ErrorMessage/ErrorMessage';
 import {
-  PATH_UNCONTROLED_FORM,
+  PATH_UNCONTROLLED_FORM,
   PATH_REACT_HOOK_FORM,
 } from '@/utils/constants/constants';
 import NotFound from '@/components/NotFound/NotFound';
@@ -19,7 +19,7 @@ const Router = createBrowserRouter(
     <>
       <Route path="/" element={<Layout />} errorElement={<ErrorMessage />}>
         <Route path={'/'} element={<MainPage />} />
-        <Route path={PATH_UNCONTROLED_FORM} element={<UncontrolledForm />} />
+        <Route path={PATH_UNCONTROLLED_FORM} element={<UncontrolledForm />} />
         <Route path={PATH_REACT_HOOK_FORM} element={<ReactHookForm />} />
         <Route path="*" element={<NotFound />} />
         <Route path="not-found" element={<NotFound />} />

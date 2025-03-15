@@ -14,7 +14,7 @@ import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import * as yup from 'yup';
 import styles from './uncontrolled-form.module.scss';
 import validatePassword from '@/utils/validation/validatePassword';
-import schemaUncontrol from '@/utils/validation/schemaUncontrol';
+import schemaUncontrolled from '@/utils/validation/schemaUncontrolled.ts';
 import IFormErrors from '@/model/components/UncontroledForm/UncontroledForm';
 import { useNavigate } from 'react-router';
 
@@ -72,7 +72,7 @@ const UncontrolledForm: FC = (): JSX.Element => {
       data[key] = value;
     });
 
-    schemaUncontrol
+    schemaUncontrolled
       .validate(data, { abortEarly: false })
       .then((validData) => {
         const file = validData.image;
