@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import EyeOn from '../EyeForPassword/EyeOn';
 import EyeOff from '../EyeForPassword/EyeOff';
 import styles from './password.module.scss';
