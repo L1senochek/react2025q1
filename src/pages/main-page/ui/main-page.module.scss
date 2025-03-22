@@ -13,7 +13,11 @@
 		flex-direction: column;
 		gap: 15px;
 		align-items: center;
-		justify-content: center;
 		width: 100%;
 	}
+}
+
+.loading,
+.error {
+	margin: auto;
 }
