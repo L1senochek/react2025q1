@@ -1,0 +1,9 @@
+@use "colors" as *;
+
+.arrow {
+	color: $icon-color;
+}
+
+.active {
+	color: $icon-color-active;
+}
