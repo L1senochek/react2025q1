@@ -1,16 +1,16 @@
 @use "colors" as *;
 
 .controls {
-	width: 100%;
 	display: flex;
+	gap: 15px;
 	align-items: center;
 	justify-content: center;
-	gap: 15px;
+	width: 100%;
 
 	&Control {
 		display: flex;
-		align-items: center;
 		gap: 10px;
+		align-items: center;
 
 		&Input {
 			padding: 5px;
