@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import { SortDirection } from '@pages/main-page/ui/country-list.tsx';
 import { SwapIcon } from '@pages/main-page/ui/swap-icon.tsx';
 
@@ -23,28 +23,42 @@ export const Controls = ({
 	regions,
 	setRegion,
 }: Props) => {
-	const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const { value } = event.target;
-		setQuery(value);
-	};
+	const handleQueryChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>) => {
+			const { value } = event.target;
+			setQuery(value);
+		},
+		[setQuery]
+	);
 
-	const handleSortByNameClick = () => {
+	const handleSortByNameClick = useCallback(() => {
 		setSortByPopulationDirection('');
 		if (sortByNameDirection === 'asc') setSortByNameDirection('desc');
 		else setSortByNameDirection('asc');
-	};
+	}, [
+		setSortByNameDirection,
+		setSortByPopulationDirection,
+		sortByNameDirection,
+	]);
 
-	const handleSortByPopulationClick = () => {
+	const handleSortByPopulationClick = useCallback(() => {
 		setSortByNameDirection('');
 		if (sortByPopulationDirection === 'asc')
 			setSortByPopulationDirection('desc');
 		else setSortByPopulationDirection('asc');
-	};
+	}, [
+		setSortByNameDirection,
+		setSortByPopulationDirection,
+		sortByPopulationDirection,
+	]);
 
-	const handleRegionChange = (event: ChangeEvent<HTMLSelectElement>) => {
-		const { value } = event.target;
-		setRegion(value);
-	};
+	const handleRegionChange = useCallback(
+		(event: ChangeEvent<HTMLSelectElement>) => {
+			const { value } = event.target;
+			setRegion(value);
+		},
+		[setRegion]
+	);
 
 	return (
 		<div className={styles.controls}>

@@ -1,5 +1,5 @@
 import { useFetchCountries } from '@pages/main-page/hooks/use-fetch-countries.ts';
-import { CountryList } from '@pages/main-page/ui/country-list.tsx';
+import CountryList from '@pages/main-page/ui/country-list.tsx';
 
 import styles from './main-page.module.scss';
 

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Country } from '@pages/main-page/api/types.ts';
 import { useLocalStorage } from '@pages/main-page/hooks/use-local-storage.ts';
 import { Controls } from '@pages/main-page/ui/controls.tsx';
-import { CountryCard } from '@pages/main-page/ui/country-card.tsx';
+import CountryCard from '@pages/main-page/ui/country-card.tsx';
 
 import styles from './country-list.module.scss';
 
@@ -18,7 +18,7 @@ enum SORT_DIRECTIONS {
 
 export type SortDirection = keyof typeof SORT_DIRECTIONS;
 
-export const CountryList = ({ countries }: Props) => {
+const CountryList = ({ countries }: Props) => {
 	const [visitedCountries, setVisitedCountries] = useLocalStorage(
 		'visitedCountries',
 		'[]'
@@ -40,64 +40,88 @@ export const CountryList = ({ countries }: Props) => {
 		useState<SortDirection>('');
 	const [region, setRegion] = useState<Region>(regions[0]);
 
-	const filterCountriesByName = (countriesArray: Country[]) => {
-		if (!query) return countriesArray;
-		return countriesArray.filter((country) =>
-			country.name.common.toLowerCase().includes(query.toLowerCase())
-		);
-	};
+	const filterCountriesByName = useCallback(
+		(countriesArray: Country[]) => {
+			if (!query) return countriesArray;
+			return countriesArray.filter((country) =>
+				country.name.common.toLowerCase().includes(query.toLowerCase())
+			);
+		},
+		[query]
+	);
 
-	const sortCountriesByName = (countriesArray: Country[]) => {
-		if (sortByNameDirection === '') return countriesArray;
-		return countriesArray.sort((a, b) => {
-			if (a.name.common > b.name.common)
-				return 1 * SORT_DIRECTIONS[sortByNameDirection];
-			else if (a.name.common < b.name.common)
-				return -1 * SORT_DIRECTIONS[sortByNameDirection];
-			else return 0;
-		});
-	};
+	const sortCountriesByName = useCallback(
+		(countriesArray: Country[]) => {
+			if (sortByNameDirection === '') return countriesArray;
+			return countriesArray.sort((a, b) => {
+				if (a.name.common > b.name.common)
+					return 1 * SORT_DIRECTIONS[sortByNameDirection];
+				else if (a.name.common < b.name.common)
+					return -1 * SORT_DIRECTIONS[sortByNameDirection];
+				else return 0;
+			});
+		},
+		[sortByNameDirection]
+	);
 
-	const sortCountriesByPopulation = (countriesArray: Country[]) => {
-		if (sortByPopulationDirection === '') return countriesArray;
-		return countriesArray.sort(
-			(a, b) =>
-				(a.population - b.population) *
-				SORT_DIRECTIONS[sortByPopulationDirection]
-		);
-	};
+	const sortCountriesByPopulation = useCallback(
+		(countriesArray: Country[]) => {
+			if (sortByPopulationDirection === '') return countriesArray;
+			return countriesArray.sort(
+				(a, b) =>
+					(a.population - b.population) *
+					SORT_DIRECTIONS[sortByPopulationDirection]
+			);
+		},
+		[sortByPopulationDirection]
+	);
 
-	const filterByRegion = (countriesArray: Country[]) => {
-		if (region === 'All') return countriesArray;
-		return countriesArray.filter((country) => country.region === region);
-	};
+	const filterByRegion = useCallback(
+		(countriesArray: Country[]) => {
+			if (region === 'All') return countriesArray;
+			return countriesArray.filter((country) => country.region === region);
+		},
+		[region]
+	);
 
-	const preparedCountriesArray = () => {
+	const preparedCountriesArray = useMemo(() => {
 		const filteredCountriesByName = filterCountriesByName([...countries]);
 		const sortedCountriesByName = sortCountriesByName(filteredCountriesByName);
 		const sortedCountriesByPopulation = sortCountriesByPopulation(
 			sortedCountriesByName
 		);
 		return filterByRegion(sortedCountriesByPopulation);
-	};
+	}, [
+		countries,
+		filterByRegion,
+		filterCountriesByName,
+		sortCountriesByName,
+		sortCountriesByPopulation,
+	]);
 
-	const isVisited = (countryName: string) => {
-		if (!visitedCountriesArray.length) return false;
-		return visitedCountriesArray.includes(countryName);
-	};
+	const isVisited = useCallback(
+		(countryName: string) => {
+			if (!visitedCountriesArray.length) return false;
+			return visitedCountriesArray.includes(countryName);
+		},
+		[visitedCountriesArray]
+	);
 
-	const handleCountryClick = (countryName: string) => {
-		if (isVisited(countryName)) {
-			setVisitedCountries(
-				JSON.stringify(
-					visitedCountriesArray.filter((country) => country !== countryName)
-				)
-			);
-		} else {
-			visitedCountriesArray.push(countryName);
-			setVisitedCountries(JSON.stringify(visitedCountriesArray));
-		}
-	};
+	const handleCountryClick = useCallback(
+		(countryName: string) => {
+			if (isVisited(countryName)) {
+				setVisitedCountries(
+					JSON.stringify(
+						visitedCountriesArray.filter((country) => country !== countryName)
+					)
+				);
+			} else {
+				visitedCountriesArray.push(countryName);
+				setVisitedCountries(JSON.stringify(visitedCountriesArray));
+			}
+		},
+		[isVisited, setVisitedCountries, visitedCountriesArray]
+	);
 
 	return (
 		<>
@@ -111,7 +135,7 @@ export const CountryList = ({ countries }: Props) => {
 				setRegion={setRegion}
 			/>
 			<div className={styles.countryList}>
-				{preparedCountriesArray().map((country) => (
+				{preparedCountriesArray.map((country) => (
 					<CountryCard
 						key={country.name.common}
 						country={country}
@@ -123,3 +147,5 @@ export const CountryList = ({ countries }: Props) => {
 		</>
 	);
 };
+
+export default memo(CountryList);

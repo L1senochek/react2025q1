@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Country } from '@pages/main-page/api/types.ts';
 import classNames from 'classnames';
 
@@ -9,7 +10,7 @@ interface Props {
 	onClick: (countryName: string) => void;
 }
 
-export const CountryCard = ({ country, isVisited, onClick }: Props) => {
+const CountryCard = ({ country, isVisited, onClick }: Props) => {
 	return (
 		<div
 			className={classNames(styles.country, isVisited ? styles.visited : '')}
@@ -34,3 +35,5 @@ export const CountryCard = ({ country, isVisited, onClick }: Props) => {
 		</div>
 	);
 };
+
+export default memo(CountryCard);
