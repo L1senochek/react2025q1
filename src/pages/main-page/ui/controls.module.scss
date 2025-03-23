@@ -2,10 +2,11 @@
 
 .controls {
 	display: flex;
-	gap: 15px;
+	gap: 25px;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
+	padding-bottom: 20px;
 
 	&Control {
 		display: flex;
