@@ -17,6 +17,13 @@
 			background-color: transparent;
 			border: 1px solid $card-border-color;
 			border-radius: 4px;
+			transition: border-color 0.3s;
+			outline: $input-border-hover;
+			color: $card-color;
+
+			&:hover {
+				border-color: $input-border-hover;
+			}
 		}
 
 		&:has(svg) {
