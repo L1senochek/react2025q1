@@ -1,6 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Country } from '@pages/main-page/api/types.ts';
-import { useLocalStorage } from '@pages/main-page/hooks/use-local-storage.ts';
 import { Controls } from '@pages/main-page/ui/controls.tsx';
 import CountryCard from '@pages/main-page/ui/country-card.tsx';
 
@@ -19,13 +18,6 @@ enum SORT_DIRECTIONS {
 export type SortDirection = keyof typeof SORT_DIRECTIONS;
 
 const CountryList = ({ countries }: Props) => {
-	const [visitedCountries, setVisitedCountries] = useLocalStorage(
-		'visitedCountries',
-		'[]'
-	);
-
-	const visitedCountriesArray: string[] = JSON.parse(visitedCountries);
-
 	const regions = [
 		'All',
 		...Array.from(new Set(countries.map((country) => country.region))),
@@ -99,30 +91,6 @@ const CountryList = ({ countries }: Props) => {
 		sortCountriesByPopulation,
 	]);
 
-	const isVisited = useCallback(
-		(countryName: string) => {
-			if (!visitedCountriesArray.length) return false;
-			return visitedCountriesArray.includes(countryName);
-		},
-		[visitedCountriesArray]
-	);
-
-	const handleCountryClick = useCallback(
-		(countryName: string) => {
-			if (isVisited(countryName)) {
-				setVisitedCountries(
-					JSON.stringify(
-						visitedCountriesArray.filter((country) => country !== countryName)
-					)
-				);
-			} else {
-				visitedCountriesArray.push(countryName);
-				setVisitedCountries(JSON.stringify(visitedCountriesArray));
-			}
-		},
-		[isVisited, setVisitedCountries, visitedCountriesArray]
-	);
-
 	return (
 		<>
 			<Controls
@@ -136,12 +104,7 @@ const CountryList = ({ countries }: Props) => {
 			/>
 			<div className={styles.countryList}>
 				{preparedCountriesArray.map((country) => (
-					<CountryCard
-						key={country.name.common}
-						country={country}
-						isVisited={isVisited(country.name.common)}
-						onClick={handleCountryClick}
-					/>
+					<CountryCard key={country.name.common} country={country} />
 				))}
 			</div>
 		</>
