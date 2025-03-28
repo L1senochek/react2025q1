@@ -1,0 +1,39 @@
+@use "colors" as *;
+
+.country {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: center;
+	padding: 10px;
+	border: 1px solid $card-border-color;
+	border-radius: 8px;
+	transition: transform 0.3s;
+
+	&:hover {
+		transform: scale(1.05);
+	}
+
+	&.visited {
+		border-color: $card-border-color-visited;
+	}
+
+	&Flag {
+		height: 100px;
+	}
+
+	&Name {
+		text-align: center;
+	}
+
+	&Info {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		margin-top: auto;
+
+		&Value {
+			font-weight: 700;
+		}
+	}
+}

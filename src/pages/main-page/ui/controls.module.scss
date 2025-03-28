@@ -1,0 +1,42 @@
+@use "colors" as *;
+
+.controls {
+	display: flex;
+	gap: 25px;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding-bottom: 20px;
+
+	&Control {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+
+		&Input {
+			padding: 5px;
+			background-color: transparent;
+			border: 1px solid $card-border-color;
+			border-radius: 4px;
+			transition: border-color 0.3s;
+			outline: $input-border-hover;
+			color: $card-color;
+
+			&:hover {
+				border-color: $input-border-hover;
+			}
+		}
+
+		&:has(svg) {
+			cursor: pointer;
+		}
+
+		svg {
+			transition: transform 0.3s;
+		}
+
+		&:hover svg {
+			transform: scale(1.1);
+		}
+	}
+}
